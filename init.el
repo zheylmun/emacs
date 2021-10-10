@@ -55,7 +55,7 @@
   (ivy-mode 1))
 
 (use-package doom-themes
-  :init (load-theme 'doom-monokai-pro t))
+  :init (load-theme 'doom-monokai-classic t))
 
 (use-package doom-modeline
   :ensure t
@@ -158,7 +158,9 @@
 (use-package org
   ;;:hook (org-mode . efs/org-mode-setup)
   :config
-  (setq org-ellipsis " ▾"))
+  (setq org-ellipsis " ▾")
+  (setq org-agenda-files
+	'("~/.emacs.d/org-files/tasks.org"))
 
 (use-package org-bullets
   :after org
@@ -195,3 +197,24 @@
   (set-face-attribute 'org-checkbox nil  :inherit 'fixed-pitch)
   (set-face-attribute 'line-number nil :inherit 'fixed-pitch)
   (set-face-attribute 'line-number-current-line nil :inherit 'fixed-pitch))
+
+(defun void/org-mode-visual-fill ()
+  (setq visual-fill-column-width 200)
+        visual-fill-column-center-text t)
+  (visual-fill-column-mode 1))
+
+(use-package visual-fill-column
+  :defer t
+  :hook (org-mode . void/org-mode-visual-fill))
+
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((emacs-lisp . t)
+   (python . t)))
+
+(setq org-confirm-babel-evaluate nil)
+
+(require 'org-tempo )
+(add-to-list 'org-structure-template-alist '("sh" . "src shell"))
+(add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
+(add-to-list 'org-structure-template-alist '("py" . "src python"))
