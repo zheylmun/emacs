@@ -11,3 +11,4 @@ init.el
 *.eld
 *.cache
 projects
+.last-package-update-day

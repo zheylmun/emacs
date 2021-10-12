@@ -49,6 +49,21 @@ Set up third party package fetching right away to reduce dependencies
 
 #+end_src
 
+** auto-package-update
+
+#+begin_src emacs-lisp
+
+  (use-package auto-package-update
+  :custom
+  (auto-package-update-interval 7)
+  (auto-package-update-prompt-before-update t)
+  (auto-package-update-hide-results t)
+  :config
+  (auto-package-update-maybe)
+  (auto-package-update-at-time "09:00"))
+  
+#+end_src
+
 * Stock UI Configuration
 
 The following section configures the basics of the stock Emacs UI. It disables several UI elements, the startup message, and configures line numbers for common modes.
@@ -283,7 +298,7 @@ General provides a convenient key binding method for key bindings.  Set up custo
 ** Evil Collection
 
 [[https://github.com/emacs-evil/evil-collection][Evil Collection]] Provides a sensible set of file types and automatically configures Evil mode for them
-   
+ 
 #+begin_src emacs-lisp
 
   (use-package evil-collection)
@@ -463,6 +478,13 @@ nice bullets
 
 #+end_src
 
+* R Tags
+
+[[https://github.com/Andersbakken/rtags][RTags]] is a C/C++ indexer which uses the compilation commands and clang frontend to ensure that the indexing is accurate.
+
+#+begin_src emacs-lisp
+(use-package rtags)
+#+end_src
 
 * E Shell
 
