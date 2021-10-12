@@ -7,3 +7,7 @@ transient/
 .\#*.*
 \#*.*\#
 init.el
+*.sqlite
+*.eld
+*.cache
+projects
