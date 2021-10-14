@@ -23,7 +23,7 @@ Set up third party package fetching right away to reduce dependencies
 
 ** Package setup with use-package
 
-[[https://github.com/jwiegley/use-package][Use-Package]] is an excellent package which greatly simplifies the installation and configuration of packages for emacs. The following configuration bootstraps the built in package system to ensure that used packages are installed before use.
+   [[https://github.com/jwiegley/use-package][Use-Package]] is an excellent package which greatly simplifies the installation and configuration of packages for emacs. The following configuration bootstraps the built in package system to ensure that used packages are installed before use.
 
 #+begin_src emacs-lisp
 
@@ -233,13 +233,9 @@ The Doom modeline provides a concise view of current mode functionality
 #+end_src
 
 * Key Bindings
-
 Packages and configuration related to key bindings
-  
 ** General
-
 General provides a convenient key binding method for key bindings.  Set up custom leader key with space bar.
-   
 #+begin_src emacs-lisp
 
   (use-package general
@@ -255,11 +251,8 @@ General provides a convenient key binding method for key bindings.  Set up custo
   (general-define-key
    "C-M-j" 'counsel-switch-buffer)
 #+end_src
-
 ** EVIL
-
-[[eww:https://github.com/emacs-evil/evil][Evil]] mode brings Vim keybindings to Emacs.
-   
+   [[eww:https://github.com/emacs-evil/evil][Evil]] mode brings Vim keybindings to Emacs.
 #+begin_src emacs-lisp
   (defun void/evil-hook ()
     (dolist (mode '(custom-mode
@@ -294,21 +287,15 @@ General provides a convenient key binding method for key bindings.  Set up custo
     (evil-set-initial-state 'dashboard-mode 'normal))
 
 #+end_src
-
 ** Evil Collection
-
-[[https://github.com/emacs-evil/evil-collection][Evil Collection]] Provides a sensible set of file types and automatically configures Evil mode for them
- 
+   [[https://github.com/emacs-evil/evil-collection][Evil Collection]] Provides a sensible set of file types and automatically configures Evil mode for them
 #+begin_src emacs-lisp
 
   (use-package evil-collection)
 
 #+end_src
-
 ** Hydra
-   
-[[https://github.com/abo-abo/hydra][Hydra]] provides a utility for creating modal clusters of bindings which dismiss automatically after a specified timeout.  This is used to create a custom mode for quickly scaling text.
-   
+   [[https://github.com/abo-abo/hydra][Hydra]] provides a utility for creating modal clusters of bindings which dismiss automatically after a specified timeout.  This is used to create a custom mode for quickly scaling text.
 #+begin_src emacs-lisp
   (use-package hydra)
 
@@ -378,13 +365,9 @@ General provides a convenient key binding method for key bindings.  Set up custo
 
 #+end_src
 
-
 * Org Mode
-  
 ** Org Mode Config
-
-Configure org-mode itself.  Replace ellipsis in collapsed sections with a nice arrow indicating additional content.
-  
+   Configure org-mode itself.  Replace ellipsis in collapsed sections with a nice arrow indicating additional content.
 #+begin_src emacs-lisp
 
   (use-package org
@@ -394,9 +377,7 @@ Configure org-mode itself.  Replace ellipsis in collapsed sections with a nice a
     (setq org-agenda-files
 	  '("~/.emacs.d/org-files/tasks.org")))
 #+end_src
-  
 ** Org Babel Configuration
-   
 Org mode babel integration for emacs-lisp and python
 #+begin_src emacs-lisp
   (org-babel-do-load-languages
@@ -406,11 +387,8 @@ Org mode babel integration for emacs-lisp and python
 
   (push '("conf-unix" . conf-unix) org-src-lang-modes)
 #+end_src
-
 ** Auto-tangle Configuration Files
-
 This snippet adds a hook to =org-mode= buffers so that =efs/org-babel-tangle-config= gets executed each time such a buffer gets saved.  This function checks to see if the file being saved is the Emacs.org file you're looking at right now, and if so, automatically exports the configuration here to the associated output files.
-
 #+begin_src emacs-lisp
 
   ;; Automatically tangle our Emacs.org config file when we save it
@@ -425,11 +403,8 @@ This snippet adds a hook to =org-mode= buffers so that =efs/org-babel-tangle-con
 
 
 #+end_src
-
 ** Org Bullets
-
 nice bullets
-   
 #+begin_src emacs-lisp
 
   (use-package org-bullets
@@ -439,25 +414,24 @@ nice bullets
     (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
 
 #+end_src
-
-
-* Magit
-
-[[https://magit.vc/][Magit]] is an incredible, text based git client.  It has a beautiful, text based graph, and all of the power of the command line interface (+ some really nice convenience features).
-
+* Development
+** Tools
+*** Magit
+    [[https://magit.vc/][Magit]] is an incredible, text based git client.  It has a beautiful, text based graph, and all of the power of the command line interface (+ some really nice convenience features).
 #+begin_src emacs-lisp
 
   (use-package magit)
 
+#+end_src
+*** Forge
+    [[https://github.com/magit/forge][Forge]] provides integration to advanced git hosting features from providers such as GitHub and GitLab.
+#+begin_src emacs-lisp
+
   (use-package forge)
 
 #+end_src
-
-
-* Projectile
-
-[[https://projectile.mx][Projectile]] is a project interaction library for Emacs that adds capabilities for quickly navigating around the files within a project.
-
+*** Projectile
+    [[https://projectile.mx][Projectile]] is a project interaction library for Emacs that adds capabilities for quickly navigating around the files within a project.
 #+begin_src emacs-lisp
 
   (use-package projectile
@@ -477,19 +451,37 @@ nice bullets
     :config (counsel-projectile-mode))
 
 #+end_src
-
-* CCLS 
-
-CCLS is a C/C++ indexer which uses the compilation commands and clang frontend to ensure that the indexing is accurate.
-
+*** LSP
+    [[https://github.com/emacs-lsp/lsp-mode][lsp-mode]] provides advanced language server based features to Emacs.
 #+begin_src emacs-lisp
-  (use-package ccls)
+
+  (use-package lsp-mode
+  :init
+  ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
+  (setq lsp-keymap-prefix "SPC-l")
+  :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
+	 (XXX-mode . lsp)
+	 ;; if you want which-key integration
+	 (lsp-mode . lsp-enable-which-key-integration))
+  :commands lsp)
+
+   (use-package lsp-ui :commands lsp-ui-mode)
+
+  (use-package ivy-xref
+   :ensure t
+   :init
+     (setq xref-show-definitions-function #'ivy-xref-show-defs))
+
 #+end_src
-
-* E Shell
-
-Emacs is frequently started from the UI instead of terminal.  Make sure the path still works.
-
+*** Flycheck
+  [[https://www.flycheck.org/en/latest/index.html][Flycheck]] provides on the fly syntax checking.
+#+begin_src emacs-lisp
+  (use-package flycheck
+    :ensure t
+    :init (global-flycheck-mode))
+#+end_src
+*** E Shell
+    Emacs is frequently started from the UI instead of terminal.  Make sure the path still works.
 #+begin_src emacs-lisp
 
   (use-package exec-path-from-shell)
@@ -498,17 +490,23 @@ Emacs is frequently started from the UI instead of terminal.  Make sure the path
     (exec-path-from-shell-initialize))
 
 #+end_src
+** Language Support
+*** CCLS 
+    CCLS is a C/C++ indexer which uses the compilation commands and clang frontend to ensure that the indexing is accurate.
+#+begin_src emacs-lisp
 
-** CMake
+  (use-package ccls
+      :hook ((c-mode c++-mode objc-mode cuda-mode) .
+	     (lambda () (require 'ccls) (lsp))))
 
+#+end_src
+*** CMake
 #+begin_src emacs-lisp
 
   (use-package cmake-mode)
 
 #+end_src
-
-** Yaml
-
+*** Yaml
 #+begin_src emacs-lisp
 
   (use-package yaml-mode)
