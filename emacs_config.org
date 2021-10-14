@@ -478,12 +478,12 @@ nice bullets
 
 #+end_src
 
-* R Tags
+* CCLS 
 
-[[https://github.com/Andersbakken/rtags][RTags]] is a C/C++ indexer which uses the compilation commands and clang frontend to ensure that the indexing is accurate.
+CCLS is a C/C++ indexer which uses the compilation commands and clang frontend to ensure that the indexing is accurate.
 
 #+begin_src emacs-lisp
-(use-package rtags)
+  (use-package ccls)
 #+end_src
 
 * E Shell
