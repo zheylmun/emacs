@@ -2,66 +2,11 @@
 #+TITLE:	Zach Heylmun Emacs Config
 #+AUTHOR:	Zach Heylmun
 #+EMAIL:	zach@voidstarsolutions.com
-#+PROPERTY:	header-args:emacs-lisp :tangle ./init.el
 
 * Emacs Config
   
 [[https://emacs.org][Emacs]] is a neat text editor
 
-* Automatic install and configuration
-  
-In order to bootstrap this configuration, simply run the following command, then restart Emacs. On windows, there's one additional step.  The config will recognize that it's missing fonts, but you need to select a download location and install them before use for the first time.  This means you must restart twice on Windows (typical Windows).
-
-#+begin_src
-  ;;Tangle this file
-  M-x org-babel-tangle
-#+end_src
-
-* Third Party Package Setup
-
-Set up third party package fetching right away to reduce dependencies.
-** Package loading performance
-Package loading can use lots of memory.  Increase the allowed amount before garbage collection.
-
-#+begin_src emacs-lisp
-
-  (setq gc-cons-threshold (* 128 1000 1000))
-
-  (defun void/display-startup-time ()
-	  (message "Emacs loaded in %s with %d garbage collections."
-			   (format "%.2f seconds" (float-time (time-subtract after-init-time before-init-time)))
-			   gcs-done))
-
-  (add-hook 'emacs-startup-hook #'void/display-startup-time)
-
-#+end_src
-** Package setup with use-package
-
-[[https://github.com/jwiegley/use-package][Use-Package]] is an excellent package which greatly simplifies the installation and configuration of packages for emacs. The following configuration bootstraps the built in package system to ensure that used packages are installed before use.
-
-#+begin_src emacs-lisp
-
-  ;; Load package management functionality
-  (require 'package)
-
-  ;; Set some repositories
-  (setq package-archives '(("melpa" . "https://melpa.org/packages/")
-			   ("org" . "https://orgmode.org/elpa/")
-			   ("elpa" . "https://elpa.gnu.org/packages/")))
-
-  (package-initialize)
-
-  (unless package-archive-contents
-    (package-refresh-contents))
-
-  (unless (package-installed-p 'use-package)
-    (package-install 'use-package))
-
-  (require 'use-package)
-
-  (setq use-package-always-ensure t)
-
-#+end_src
 
 ** auto-package-update
 
@@ -85,31 +30,28 @@ The following section configures the basics of the stock Emacs UI. It disables s
 ** Basic UI elements
 
 #+begin_src emacs-lisp
-  ;; No need for the startup screen
-  (setq inhibit-startup-message t)
-  ;; No need for scroll bars
-  (scroll-bar-mode -1)
-  ;; No need for Toolbars
-  (tool-bar-mode -1)
-  ;; Start text 30 pixels from the left edge of the buffer
-  (set-fringe-mode 30)
-  ;; Disable menu bars
-  (menu-bar-mode -1)
 
-  ;; Bell gets real annoying
-  (setq visible-bell t)
+  ;; Start text 16 pixels from the left edge of the buffer
+   (set-fringe-mode 16)
 
-  ;; Show column numbers in the mini-buffer
-  (column-number-mode)
+   ;; Bell gets real annoying
+   (setq visible-bell t)
+
+   ;; Show column numbers in the mini-buffer
+   (column-number-mode)
+
   ;; Enable line numbers globally
-  (global-display-line-numbers-mode t)
+   (global-display-line-numbers-mode t)
+
   ;; Disable line numbers in org-mode, term-mode and eshell-mode
-  (dolist (mode '(org-mode-hook
-		  term-mode-hook
-		  eshell-mode-hook))
-    (add-hook mode (lambda () (display-line-numbers-mode 0))))
-  ;; 8 character tabs are too damn large
-  (setq-default tab-width 4)
+   (dolist (mode '(org-mode-hook
+		   term-mode-hook
+		   eshell-mode-hook))
+	 (add-hook mode (lambda () (display-line-numbers-mode 0))))
+
+   ;; 8 character tabs are too damn large
+   (setq-default tab-width 4)
+
 #+end_src
 
 ** File backup behavior
@@ -290,36 +232,36 @@ General provides a convenient key binding method for key bindings.  Set up custo
    [[eww:https://github.com/emacs-evil/evil][Evil]] mode brings Vim keybindings to Emacs.
 #+begin_src emacs-lisp
   (defun void/evil-hook ()
-    (dolist (mode '(custom-mode
-		    eshell-mode
-		    git-rebase-mode
-		    erc-mode
-		    circe-server-mode
-		    circe-chat-mode
-		    circe-query-mode
-		    sauron-mode
-		    term-mode))
-      (add-to-list 'evil-emacs-state-modes mode)))
+	(dolist (mode '(custom-mode
+			eshell-mode
+			git-rebase-mode
+			erc-mode
+			circe-server-mode
+			circe-chat-mode
+			circe-query-mode
+			sauron-mode
+			term-mode))
+	  (add-to-list 'evil-emacs-state-modes mode)))
 
   (use-package evil
-    :init
-    (setq evil-want-integration t)
-    (setq evil-want-keybinding nil)
-    (setq evil-want-C-u-scroll t)
-    (setq evil-want-C-i-jump nil)
-    :hook (evil-mode . void/evil-hook)
-    :config
-    (evil-mode 1)
+	:init
+	(setq evil-want-integration t)
+	(setq evil-want-keybinding nil)
+	(setq evil-want-C-u-scroll t)
+	(setq evil-want-C-i-jump nil)
+	:hook (evil-mode . void/evil-hook)
+	:config
+	(evil-mode 1)
 
-    ;; Since I have the fancy keyboard I'm not gonna remap to add backspace, as it's under my thumb
-    (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
-    (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
+	;; Since I have the fancy keyboard I'm not gonna remap to add backspace, as it's under my thumb
+	(define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
+	(define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
 
-    ;; Use visual line motions everywhere
-    (evil-global-set-key 'motion "j" 'evil-next-visual-line)
-    (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
-    (evil-set-initial-state 'messages-buffer-mode 'normal) 
-    (evil-set-initial-state 'dashboard-mode 'normal))
+	;; Use visual line motions everywhere
+	(evil-global-set-key 'motion "j" 'evil-next-visual-line)
+	(evil-global-set-key 'motion "k" 'evil-previous-visual-line)
+	(evil-set-initial-state 'messages-buffer-mode 'normal) 
+	(evil-set-initial-state 'dashboard-mode 'normal))
 
 #+end_src
 ** Evil Collection
@@ -346,50 +288,50 @@ General provides a convenient key binding method for key bindings.  Set up custo
 
 
 #+begin_src emacs-lisp
-  (defun efs/org-font-setup ()
-    ;; Replace list hyphen with dot
-    (font-lock-add-keywords 'org-mode
-			    '(("^ *\\([-]\\) "
-			       (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+  (defun void/org-font-setup ()
+	;; Replace list hyphen with dot
+	(font-lock-add-keywords 'org-mode
+							'(("^ *\\([-]\\) "
+							   (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
 
-    ;; Set faces for heading levels
-    (dolist (face '((org-level-1 . 1.2)
-		    (org-level-2 . 1.1)
-		    (org-level-3 . 1.05)
-		    (org-level-4 . 1.0)
-		    (org-level-5 . 1.1)
-		    (org-level-6 . 1.1)
-		    (org-level-7 . 1.1)
-		    (org-level-8 . 1.1)))
-      (set-face-attribute (car face) nil :font "Cantarell" :weight 'regular :height (cdr face)))
+	;; Set faces for heading levels
+	(dolist (face '((org-level-1 . 1.2)
+			(org-level-2 . 1.1)
+			(org-level-3 . 1.05)
+			(org-level-4 . 1.0)
+			(org-level-5 . 1.1)
+			(org-level-6 . 1.1)
+			(org-level-7 . 1.1)
+			(org-level-8 . 1.1)))
+	  (set-face-attribute (car face) nil :font "Cantarell" :weight 'regular :height (cdr face)))
 
-    ;; Ensure that anything that should be fixed-pitch in Org files appears that way
-    (set-face-attribute 'org-block nil    :foreground nil :inherit 'fixed-pitch)
-    (set-face-attribute 'org-table nil    :inherit 'fixed-pitch)
-    (set-face-attribute 'org-formula nil  :inherit 'fixed-pitch)
-    (set-face-attribute 'org-code nil     :inherit '(shadow fixed-pitch))
-    (set-face-attribute 'org-table nil    :inherit '(shadow fixed-pitch))
-    (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
-    (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
-    (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
-    (set-face-attribute 'org-checkbox nil  :inherit 'fixed-pitch)
-    (set-face-attribute 'line-number nil :inherit 'fixed-pitch)
-    (set-face-attribute 'line-number-current-line nil :inherit 'fixed-pitch))
+	;; Ensure that anything that should be fixed-pitch in Org files appears that way
+	(set-face-attribute 'org-block nil    :foreground nil :inherit 'fixed-pitch)
+	(set-face-attribute 'org-table nil    :inherit 'fixed-pitch)
+	(set-face-attribute 'org-formula nil  :inherit 'fixed-pitch)
+	(set-face-attribute 'org-code nil     :inherit '(shadow fixed-pitch))
+	(set-face-attribute 'org-table nil    :inherit '(shadow fixed-pitch))
+	(set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+	(set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
+	(set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
+	(set-face-attribute 'org-checkbox nil  :inherit 'fixed-pitch)
+	(set-face-attribute 'line-number nil :inherit 'fixed-pitch)
+	(set-face-attribute 'line-number-current-line nil :inherit 'fixed-pitch))
 
   (defun void/org-mode-visual-fill ()
-    (setq visual-fill-column-width 120
+	(setq visual-fill-column-width 120
 	  visual-fill-column-center-text t)
-    (visual-fill-column-mode 1)
-    (visual-line-mode 1))
+	(visual-fill-column-mode 1)
+	(visual-line-mode 1))
 
   (use-package visual-fill-column
-    :defer t
-    :hook (org-mode . void/org-mode-visual-fill))
+	:defer t
+	:hook (org-mode . void/org-mode-visual-fill))
 
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((emacs-lisp . t)
-     (python . t)))
+	 (python . t)))
 
   (setq org-confirm-babel-evaluate nil)
 
@@ -422,22 +364,7 @@ Org mode babel integration for emacs-lisp and python
 
   (push '("conf-unix" . conf-unix) org-src-lang-modes)
 #+end_src
-** Auto-tangle Configuration Files
-This snippet adds a hook to =org-mode= buffers so that =efs/org-babel-tangle-config= gets executed each time such a buffer gets saved.  This function checks to see if the file being saved is the Emacs.org file you're looking at right now, and if so, automatically exports the configuration here to the associated output files.
-#+begin_src emacs-lisp
 
-  ;; Automatically tangle our Emacs.org config file when we save it
-  (defun void/org-babel-tangle-config () 
-    (when (string-equal (buffer-file-name)
-			(expand-file-name "~/.emacs.d/emacs_config.org"))
-      ;; Dynamic scoping to the rescue
-      (let ((org-confirm-babel-evaluate nil))
-	(org-babel-tangle))))
-
-  (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'void/org-babel-tangle-config)))
-
-
-#+end_src
 ** Org Bullets
 nice bullets
 #+begin_src emacs-lisp

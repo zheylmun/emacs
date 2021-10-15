@@ -1,12 +1,11 @@
 .DS_Store
-*~
+config.el
 auto-save-list/
 elpa/
 eshell/
 transient/
 .\#*.*
 \#*.*\#
-init.el
 *.sqlite
 *.eld
 *.cache
