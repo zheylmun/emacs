@@ -19,11 +19,25 @@ In order to bootstrap this configuration, simply run the following command, then
 
 * Third Party Package Setup
 
-Set up third party package fetching right away to reduce dependencies
+Set up third party package fetching right away to reduce dependencies.
+** Package loading performance
+Package loading can use lots of memory.  Increase the allowed amount before garbage collection.
 
+#+begin_src emacs-lisp
+
+  (setq gc-cons-threshold (* 128 1000 1000))
+
+  (defun void/display-startup-time ()
+	  (message "Emacs loaded in %s with %d garbage collections."
+			   (format "%.2f seconds" (float-time (time-subtract after-init-time before-init-time)))
+			   gcs-done))
+
+  (add-hook 'emacs-startup-hook #'void/display-startup-time)
+
+#+end_src
 ** Package setup with use-package
 
-   [[https://github.com/jwiegley/use-package][Use-Package]] is an excellent package which greatly simplifies the installation and configuration of packages for emacs. The following configuration bootstraps the built in package system to ensure that used packages are installed before use.
+[[https://github.com/jwiegley/use-package][Use-Package]] is an excellent package which greatly simplifies the installation and configuration of packages for emacs. The following configuration bootstraps the built in package system to ensure that used packages are installed before use.
 
 #+begin_src emacs-lisp
 
@@ -54,14 +68,14 @@ Set up third party package fetching right away to reduce dependencies
 #+begin_src emacs-lisp
 
   (use-package auto-package-update
-  :custom
-  (auto-package-update-interval 7)
-  (auto-package-update-prompt-before-update t)
-  (auto-package-update-hide-results t)
-  :config
-  (auto-package-update-maybe)
-  (auto-package-update-at-time "09:00"))
-  
+    :custom
+    (auto-package-update-interval 7)
+    (auto-package-update-prompt-before-update t)
+    (auto-package-update-hide-results t)
+    :config
+    (auto-package-update-maybe)
+    (auto-package-update-at-time "09:00"))
+
 #+end_src
 
 * Stock UI Configuration
@@ -77,8 +91,14 @@ The following section configures the basics of the stock Emacs UI. It disables s
   (scroll-bar-mode -1)
   ;; No need for Toolbars
   (tool-bar-mode -1)
-  ;; Start text 30 pixels from the left edge of the buffer 
+  ;; Start text 30 pixels from the left edge of the buffer
   (set-fringe-mode 30)
+  ;; Disable menu bars
+  (menu-bar-mode -1)
+
+  ;; Bell gets real annoying
+  (setq visible-bell t)
+
   ;; Show column numbers in the mini-buffer
   (column-number-mode)
   ;; Enable line numbers globally
@@ -88,7 +108,8 @@ The following section configures the basics of the stock Emacs UI. It disables s
 		  term-mode-hook
 		  eshell-mode-hook))
     (add-hook mode (lambda () (display-line-numbers-mode 0))))
-
+  ;; 8 character tabs are too damn large
+  (setq-default tab-width 4)
 #+end_src
 
 ** File backup behavior
@@ -97,20 +118,21 @@ Default file backup behavior is awful.  Make it less awful:
 
 #+begin_src emacs-lisp
 
-  (setq
-   backup-by-copying t      ; don't clobber symlinks
-   backup-directory-alist
-   '(("." . "~/.saves/"))    ; don't litter my fs tree
-   delete-old-versions t
-   kept-new-versions 6
-   kept-old-versions 2
-   version-control t)       ; use versioned backups
+  (setq user-emacs-directory "~/.cache/emacs")
+
+  (use-package no-littering)
+
+  ;; no-littering doesn't set this by default so we must place
+  ;; auto save files in the same path as it uses for sessions
+  (setq auto-save-file-name-transforms
+	`((".*" ,(no-littering-expand-var-file-name "auto-save/") t)))
 
 #+end_src
 
 * Fonts
 
 #+begin_src emacs-lisp
+
   ;; Fira Code Retina is a beautiful, mono-spaced font with nice ligatures for programming symbols
   ;; Used as default font for most things
   (set-face-attribute 'default nil :font "Fira Code Retina" :height 140)
@@ -132,7 +154,11 @@ Set of packages to improve the look and functionality of the UI
 #+begin_src emacs-lisp
 
   (use-package doom-themes
-    :init (load-theme 'doom-monokai-classic t))
+	:config
+	(doom-themes-visual-bell-config)
+	(doom-themes-treemacs-config)
+	(doom-themes-org-config)
+	:init (load-theme 'doom-monokai-classic t))
 
 #+end_src
 
@@ -159,7 +185,16 @@ The Doom modeline provides a concise view of current mode functionality
     :hook (prog-mode . rainbow-delimiters-mode))
 
 #+end_src
-    
+
+** Treemacs
+[[https://github.com/Alexander-Miller/treemacs#treemacs---a-tree-layout-file-explorer-for-emacs][Treemacs]] provides a file and project explorer.  It gives a nice outline similar to many IDEs.
+#+begin_src emacs-lisp
+  (use-package treemacs
+	:ensure t
+	:defer t
+	:init(with-eval-after-load 'winum
+		   (define-key winum-keymap (kbd "M-0") #'treemacs-select-window)))
+#+end_src
 * Help and navigation
    
 ** Ivy, Swiper, Counsel
@@ -295,7 +330,7 @@ General provides a convenient key binding method for key bindings.  Set up custo
 
 #+end_src
 ** Hydra
-   [[https://github.com/abo-abo/hydra][Hydra]] provides a utility for creating modal clusters of bindings which dismiss automatically after a specified timeout.  This is used to create a custom mode for quickly scaling text.
+[[https://github.com/abo-abo/hydra][Hydra]] provides a utility for creating modal clusters of bindings which dismiss automatically after a specified timeout.  This is used to create a custom mode for quickly scaling text.
 #+begin_src emacs-lisp
   (use-package hydra)
 
@@ -416,18 +451,62 @@ nice bullets
 #+end_src
 * Development
 ** Tools
-*** Magit
-    [[https://magit.vc/][Magit]] is an incredible, text based git client.  It has a beautiful, text based graph, and all of the power of the command line interface (+ some really nice convenience features).
+*** E Shell
+    Emacs is frequently started from the UI instead of terminal.  Make sure the path still works.
 #+begin_src emacs-lisp
 
-  (use-package magit)
+  (use-package exec-path-from-shell)
 
+  (when (memq window-system '(mac ns x))
+    (exec-path-from-shell-initialize))
+
+#+end_src
+*** Flycheck
+  [[https://www.flycheck.org/en/latest/index.html][Flycheck]] provides on the fly syntax checking.
+#+begin_src emacs-lisp
+  (use-package flycheck
+    :ensure t
+    :init (global-flycheck-mode))
 #+end_src
 *** Forge
     [[https://github.com/magit/forge][Forge]] provides integration to advanced git hosting features from providers such as GitHub and GitLab.
 #+begin_src emacs-lisp
 
   (use-package forge)
+
+#+end_src
+*** LSP
+    [[https://github.com/emacs-lsp/lsp-mode][lsp-mode]] provides advanced language server based features to Emacs.
+#+begin_src emacs-lisp
+
+  (defun void/lsp-mode-setup ()
+    (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
+    (lsp-headerline-breadcrumb-mode))
+
+  (use-package lsp-mode
+    :init
+    ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
+    (setq lsp-keymap-prefix "C-c l")
+    :commands(lsp lsp-deferred)
+    :config
+    (lsp-enable-which-key-integration))
+
+  (use-package lsp-ui
+    :hook (lsp-mode . lsp-ui-mode)
+    :custom
+    (lsp-ui-doc-position 'bottom))
+
+  (use-package ivy-xref
+   :ensure t
+   :init
+   (setq xref-show-definitions-function #'ivy-xref-show-defs))
+
+#+end_src
+*** Magit
+    [[https://magit.vc/][Magit]] is an incredible, text based git client.  It has a beautiful, text based graph, and all of the power of the command line interface (+ some really nice convenience features).
+#+begin_src emacs-lisp
+
+  (use-package magit)
 
 #+end_src
 *** Projectile
@@ -451,47 +530,16 @@ nice bullets
     :config (counsel-projectile-mode))
 
 #+end_src
-*** LSP
-    [[https://github.com/emacs-lsp/lsp-mode][lsp-mode]] provides advanced language server based features to Emacs.
+*** Whitespace Mode
 #+begin_src emacs-lisp
+(require 'whitespace)
 
-  (use-package lsp-mode
-  :init
-  ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
-  (setq lsp-keymap-prefix "SPC-l")
-  :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
-	 (XXX-mode . lsp)
-	 ;; if you want which-key integration
-	 (lsp-mode . lsp-enable-which-key-integration))
-  :commands lsp)
-
-   (use-package lsp-ui :commands lsp-ui-mode)
-
-  (use-package ivy-xref
-   :ensure t
-   :init
-     (setq xref-show-definitions-function #'ivy-xref-show-defs))
-
-#+end_src
-*** Flycheck
-  [[https://www.flycheck.org/en/latest/index.html][Flycheck]] provides on the fly syntax checking.
-#+begin_src emacs-lisp
-  (use-package flycheck
-    :ensure t
-    :init (global-flycheck-mode))
-#+end_src
-*** E Shell
-    Emacs is frequently started from the UI instead of terminal.  Make sure the path still works.
-#+begin_src emacs-lisp
-
-  (use-package exec-path-from-shell)
-
-  (when (memq window-system '(mac ns x))
-    (exec-path-from-shell-initialize))
-
+(setq whitespace-style '(face trailing indentation::tab space-before-tab::tab space-after-tab))
+; turn on whitespace-mode in any 'programming mode'
+(add-hook 'prog-mode-hook (lambda () (whitespace-mode t)))
 #+end_src
 ** Language Support
-*** CCLS 
+*** C/C++ 
     CCLS is a C/C++ indexer which uses the compilation commands and clang frontend to ensure that the indexing is accurate.
 #+begin_src emacs-lisp
 
@@ -505,6 +553,14 @@ nice bullets
 
   (use-package cmake-mode)
 
+#+end_src
+*** Dart
+#+begin_src emacs-lisp
+
+  (use-package dart-mode)
+  (use-package lsp-dart)
+  (add-hook 'dart-mode-hook 'lsp)
+  
 #+end_src
 *** Yaml
 #+begin_src emacs-lisp
