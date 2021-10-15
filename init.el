@@ -49,7 +49,9 @@
 ;; use-package is used to configure the rest of the packages.
 ;; Only force refresh if we need one of the 3 packages bootstrapped
 (unless (and (package-installed-p 'use-package)
-			 (package-installed-p 'diminish))
+			 (package-installed-p 'diminish)
+			 (package-installed-p 'bind-key))
+  
   (package-refresh-contents))
 
 ;; Install use-package if needed

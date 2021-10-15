@@ -1,4 +1,3 @@
-
 #+TITLE:	Zach Heylmun Emacs Config
 #+AUTHOR:	Zach Heylmun
 #+EMAIL:	zach@voidstarsolutions.com
@@ -8,22 +7,23 @@
 [[https://emacs.org][Emacs]] is a neat text editor
 
 
-** auto-package-update
+* auto-package-update
+
+Automagically update packages weekly if updates are available.
 
 #+begin_src emacs-lisp
 
+  ;; Automatically pull updates weekly and hide results
   (use-package auto-package-update
-    :custom
-    (auto-package-update-interval 7)
-    (auto-package-update-prompt-before-update 0)
-    (auto-package-update-hide-results t)
-    :config
-    (auto-package-update-maybe)
-    (auto-package-update-at-time "09:00"))
+	:custom
+	(auto-package-update-interval 7)
+	(auto-package-update-hide-results t)
+	:config
+	(auto-package-update-maybe))
 
 #+end_src
 
-* Stock UI Configuration
+* UI Configuration
 
 The following section configures the basics of the stock Emacs UI. Inint.el also disables several UI elements, the startup message.  Here we configure default buffer rendering and UI behavior.
 
@@ -32,16 +32,13 @@ The following section configures the basics of the stock Emacs UI. Inint.el also
 #+begin_src emacs-lisp
 
   ;; Start text 16 pixels from the left edge of the buffer
-   (set-fringe-mode 16)
+  (set-fringe-mode 16)
 
-   ;; Bell gets real annoying
-   (setq visible-bell t)
-
-   ;; Show column numbers in the mini-buffer
-   (column-number-mode)
+  ;; Show column numbers in the mini-buffer
+  (column-number-mode)
 
   ;; Enable line numbers globally
-   (global-display-line-numbers-mode t)
+  (global-display-line-numbers-mode t)
 
   ;; Disable line numbers in org-mode, term-mode and eshell-mode
    (dolist (mode '(org-mode-hook
@@ -49,8 +46,8 @@ The following section configures the basics of the stock Emacs UI. Inint.el also
 		   eshell-mode-hook))
 	 (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
-   ;; 8 character tabs are too damn large
-   (setq-default tab-width 4)
+  ;; 8 character tabs are too damn large
+  (setq-default tab-width 4)
 
 #+end_src
 
@@ -75,15 +72,16 @@ Default file backup behavior is awful.  Make it less awful:
 
 #+begin_src emacs-lisp
 
-  ;; Fira Code Retina is a beautiful, mono-spaced font with nice ligatures for programming symbols
-  ;; Used as default font for most things
-  (set-face-attribute 'default nil :font "Fira Code Retina" :height 140)
+   ;; Fira Code Retina is a beautiful, mono-spaced font with nice ligatures for programming symbols
+   ;; Used as default font for most things
+   (set-face-attribute 'default nil :font "Fira Code Retina" :height 140)
 
-  (use-package all-the-icons)
+   (use-package all-the-icons)
 
-  ;; All the icons requires that the fonts be installed to the system before use.
-  ;; Check for them and install if unavailable, silencing the confirmation
-  (if(not(find-font(font-spec :name "all-the-icons"))) (all-the-icons-install-fonts 0))
+   ;; All the icons requires that the fonts be installed to the system before use.
+   ;; Check for them and install if unavailable, silencing the confirmation
+   (if(not(find-font(font-spec :name "all-the-icons")))
+	   (all-the-icons-install-fonts 0))
 
 #+end_src
    
@@ -100,7 +98,8 @@ Set of packages to improve the look and functionality of the UI
 	(doom-themes-visual-bell-config)
 	(doom-themes-treemacs-config)
 	(doom-themes-org-config)
-	:init (load-theme 'doom-monokai-classic t))
+	:init
+	(load-theme 'doom-monokai-classic t))
 
 #+end_src
 
@@ -111,9 +110,9 @@ The Doom modeline provides a concise view of current mode functionality
 #+begin_src emacs-lisp
 
   (use-package doom-modeline
-    :ensure t
-    :init (doom-modeline-mode 1)
-    :custom ((doom-modeline-height 16)))
+	:ensure t
+	:init (doom-modeline-mode 1)
+	:custom ((doom-modeline-height 32)))
 
 #+end_src
 
@@ -124,7 +123,7 @@ The Doom modeline provides a concise view of current mode functionality
 #+begin_src emacs-lisp
 
   (use-package rainbow-delimiters
-    :hook (prog-mode . rainbow-delimiters-mode))
+	:hook (prog-mode . rainbow-delimiters-mode))
 
 #+end_src
 
@@ -136,7 +135,16 @@ The Doom modeline provides a concise view of current mode functionality
 	:defer t
 	:init(with-eval-after-load 'winum
 		   (define-key winum-keymap (kbd "M-0") #'treemacs-select-window)))
+
+  (use-package treemacs-evil
+	:after evil treemacs)
+  (use-package treemacs-magit
+	:after magit treemacs)
+  (use-package treemacs-projectile
+	:after projectile treemacs)
+
 #+end_src
+
 * Help and navigation
    
 ** Ivy, Swiper, Counsel
@@ -146,34 +154,34 @@ The Doom modeline provides a concise view of current mode functionality
 #+begin_src emacs-lisp
 
   (use-package ivy
-    :diminish
-    :bind (("C-s" . swiper)
-	   :map ivy-minibuffer-map
-	   ("TAB" . ivy-alt-done)
-	   ("C-l" . ivy-alt-done)
-	   ("C-j" . ivy-next-line)
-	   ("C-k" . ivy-previous-line)
-	   :map ivy-switch-buffer-map
-	   ("C-k" . ivy-previous-line)
-	   ("C-l" . ivy-done)
-	   ("C-d" . ivy-switch-buffer-kill)
-	   :map ivy-reverse-i-search-map
-	   ("C-k" . ivy-previous-line)
-	   ("C-d" . ivy-reverse-i-search-kill))
-    :config
-    (ivy-mode 1))
+	:diminish
+	:bind (("C-s" . swiper)
+		   :map ivy-minibuffer-map
+		   ("TAB" . ivy-alt-done)
+		   ("C-l" . ivy-alt-done)
+		   ("C-j" . ivy-next-line)
+		   ("C-k" . ivy-previous-line)
+		   :map ivy-switch-buffer-map
+		   ("C-k" . ivy-previous-line)
+		   ("C-l" . ivy-done)
+		   ("C-d" . ivy-switch-buffer-kill)
+		   :map ivy-reverse-i-search-map
+		   ("C-k" . ivy-previous-line)
+		   ("C-d" . ivy-reverse-i-search-kill))
+	:config
+	(ivy-mode 1))
 
   (use-package counsel
-    :bind(( "M-x" . counsel-M-x)
-	  ("C-x b" . counsel-ibuffer)
-	  ("C-x C-f" . counsel-find-file)
-	  :map minibuffer-local-map
-	  ("C-r" . 'counsel-minibuffer-history)))
+	:bind(( "M-x" . counsel-M-x)
+		  ("C-x b" . counsel-ibuffer)
+		  ("C-x C-f" . counsel-find-file)
+		  :map minibuffer-local-map
+		  ("C-r" . 'counsel-minibuffer-history)))
 
   (use-package ivy-rich
-    :after ivy
-    :init
-    (ivy-rich-mode 1))
+	:after ivy
+	:init
+	(ivy-rich-mode 1))
 
 #+end_src
 
@@ -216,14 +224,14 @@ General provides a convenient key binding method for key bindings.  Set up custo
 #+begin_src emacs-lisp
 
   (use-package general
-    :config
-    (general-create-definer void/leader-keys
-      :keymaps '(normal insert visual emacs)
-      :prefix "SPC"
-      :global-prefix "C-SPC")
-    (void/leader-keys
-      "t" '(:ignore t :which-key "toggles")
-      "tt" '(counsel-load-theme :which-key "chose theme")))
+	:config
+	(general-create-definer void/leader-keys
+	  :keymaps '(normal insert visual emacs)
+	  :prefix "SPC"
+	  :global-prefix "C-SPC")
+	(void/leader-keys
+	  "to" '(:ignore t :which-key "toggles")
+	  "tt" '(counsel-load-theme :which-key "chose theme")))
 
   (general-define-key
    "C-M-j" 'counsel-switch-buffer)
@@ -466,29 +474,40 @@ nice bullets
 (add-hook 'prog-mode-hook (lambda () (whitespace-mode t)))
 #+end_src
 ** Language Support
-*** C/C++ 
+*** C/C++
+
     CCLS is a C/C++ indexer which uses the compilation commands and clang frontend to ensure that the indexing is accurate.
+	
 #+begin_src emacs-lisp
 
   (use-package ccls
-      :hook ((c-mode c++-mode objc-mode cuda-mode) .
-	     (lambda () (require 'ccls) (lsp))))
+	:hook ((c-mode c++-mode objc-mode cuda-mode) .
+		   (lambda () (require 'ccls) (lsp))))
 
 #+end_src
+
 *** CMake
+
+Add support for [[https://cmake.org][CMake]] files.
+
 #+begin_src emacs-lisp
 
   (use-package cmake-mode)
 
 #+end_src
+
 *** Dart
+
+Add support for [[https://dart.dev][Dart]] and [[https://flutter.dev][Flutter]] development.
+
 #+begin_src emacs-lisp
 
   (use-package dart-mode)
   (use-package lsp-dart)
   (add-hook 'dart-mode-hook 'lsp)
-  
+
 #+end_src
+
 *** Yaml
 #+begin_src emacs-lisp
 
