@@ -15,7 +15,7 @@
   (use-package auto-package-update
     :custom
     (auto-package-update-interval 7)
-    (auto-package-update-prompt-before-update t)
+    (auto-package-update-prompt-before-update 0)
     (auto-package-update-hide-results t)
     :config
     (auto-package-update-maybe)
@@ -25,7 +25,7 @@
 
 * Stock UI Configuration
 
-The following section configures the basics of the stock Emacs UI. It disables several UI elements, the startup message, and configures line numbers for common modes.
+The following section configures the basics of the stock Emacs UI. Inint.el also disables several UI elements, the startup message.  Here we configure default buffer rendering and UI behavior.
 
 ** Basic UI elements
 

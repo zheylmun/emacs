@@ -1,3 +1,15 @@
-#+title: My super neato emacs config
+#+title: Zach Heylmun Emacs Configuration
 
-This is some text I wrote in my readme
+* Overview
+
+This repo contains a custom git configuration created by [[https://github.com/zheylmun][Zach Heylmun]] based heavily on the excellent [[https://github.com/daviwil/emacs-from-scratch][Emacs From Scratch]] repository and [[https://www.youtube.com/playlist?list=PLEoMzSkcN8oPH1au7H6B7bBJ4ZO7BXjSZ][video series]] by [[https://github.com/daviwil][David Wilson]]. It contains a very small [[./init.el][init.el]] which simply disables some UI elements, bootstraps package management, and loads the real configuration contained in [[./config.org][config.org]].
+
+* Installation
+
+This is a self boot-strapping configuration.  To use it simply clone this repo to the home directory, then start Emacs.
+
+#+begin_src sh
+
+  git clone git@github.com:zheylmun/emacs.git ~/.emacs.d
+
+#+end_src
