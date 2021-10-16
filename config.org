@@ -386,6 +386,15 @@ nice bullets
 #+end_src
 * Development
 ** Tools
+*** Company
+[[http://company-mode.github.io/][Company]] is a completion framework for Emacs.  It includes backends for many common tasks.
+#+begin_src emacs-lisp
+
+  (use-package company)
+  (add-hook 'after-init-hook 'global-company-mode)
+
+#+end_src
+
 *** E Shell
     Emacs is frequently started from the UI instead of terminal.  Make sure the path still works.
 #+begin_src emacs-lisp
@@ -505,6 +514,13 @@ Add support for [[https://dart.dev][Dart]] and [[https://flutter.dev][Flutter]] 
   (use-package dart-mode)
   (use-package lsp-dart)
   (add-hook 'dart-mode-hook 'lsp)
+
+#+end_src
+
+*** Make
+#+begin_src emacs-lisp
+
+  (use-package make-mode)
 
 #+end_src
 

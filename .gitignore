@@ -11,3 +11,4 @@ transient/
 *.cache
 projects
 .last-package-update-day
+eln-cache
