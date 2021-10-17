@@ -6,8 +6,7 @@
   
 [[https://emacs.org][Emacs]] is a neat text editor
 
-
-* auto-package-update
+* Auto-Package-Update
 
 Automagically update packages weekly if updates are available.
 
@@ -185,6 +184,19 @@ The Doom modeline provides a concise view of current mode functionality
 
 #+end_src
 
+** Prescient
+[[https://github.com/raxod502/prescient.el][Prescient]] is a sorting and filtering extension which improves the usability of suggestions by from Ivy, Company
+
+#+begin_src emacs-lisp
+
+  (use-package prescient)
+  (use-package ivy-prescient
+	:after ivy prescient)
+  (use-package company-prescient
+	:after company prescient)
+
+#+end_src
+
 ** Helpful
 
 [[eww:https://github.com/Wilfred/helpful][Helpful]] is an alternative to the built-in emacs help functionality that provides considerably more contextual information.
@@ -218,9 +230,13 @@ The Doom modeline provides a concise view of current mode functionality
 #+end_src
 
 * Key Bindings
+
 Packages and configuration related to key bindings
+
 ** General
+
 General provides a convenient key binding method for key bindings.  Set up custom leader key with space bar.
+
 #+begin_src emacs-lisp
 
   (use-package general
@@ -235,9 +251,13 @@ General provides a convenient key binding method for key bindings.  Set up custo
 
   (general-define-key
    "C-M-j" 'counsel-switch-buffer)
+
 #+end_src
+
 ** EVIL
+
    [[eww:https://github.com/emacs-evil/evil][Evil]] mode brings Vim keybindings to Emacs.
+   
 #+begin_src emacs-lisp
   (defun void/evil-hook ()
 	(dolist (mode '(custom-mode
@@ -272,15 +292,21 @@ General provides a convenient key binding method for key bindings.  Set up custo
 	(evil-set-initial-state 'dashboard-mode 'normal))
 
 #+end_src
+
 ** Evil Collection
-   [[https://github.com/emacs-evil/evil-collection][Evil Collection]] Provides a sensible set of file types and automatically configures Evil mode for them
+
+[[https://github.com/emacs-evil/evil-collection][Evil Collection]] Provides a sensible set of file types and automatically configures Evil mode for them
+
 #+begin_src emacs-lisp
 
   (use-package evil-collection)
 
 #+end_src
+
 ** Hydra
+
 [[https://github.com/abo-abo/hydra][Hydra]] provides a utility for creating modal clusters of bindings which dismiss automatically after a specified timeout.  This is used to create a custom mode for quickly scaling text.
+
 #+begin_src emacs-lisp
   (use-package hydra)
 
@@ -530,3 +556,66 @@ Add support for [[https://dart.dev][Dart]] and [[https://flutter.dev][Flutter]] 
   (use-package yaml-mode)
 
 #+end_src
+
+* Terminals and Shells
+
+** All Terminals
+
+Configuration for terminals which all use
+
+#+begin_src emacs-lisp
+
+  (setq explicit-shell-file-name "zsh")
+  (setq term-prompt-regexp "^#$%>\n]*[#$%>] *")
+
+#+end_src
+
+** VTerm
+
+#+begin_src emacs-lisp
+
+  (use-package vterm
+   :commands vterm
+   :config
+   (setq vterm-max-scrollback 10000))
+
+#+end_src
+
+** EShell
+EShell is Emacs built in shell.
+
+#+begin_src emacs-lisp
+  (defun void/configure-eshell ()
+	;; Save a command history
+	(add-hook 'eshell-pre-command-hook 'eshell-save-some-history)
+
+	;; Truncate buffer for performance
+	(add-to-list 'eshell-output-filter-functions 'eshell-truncate-buffer)
+	;; Bind C-r to pull up history buffer
+	(evil-define-key '(normal insert visual) eshell-mode-map (kbd "C-r") 'counsel-esh-history)
+
+	;; Renormalize keymaps
+	(evil-normalize-keymaps)
+
+  (setq eshell-history-size 10000
+			  eshell-buffer-maximum-lines 10000
+			  eshell-hist-ignoredups t
+			  eshell-scroll-to-bottom-on-input t))
+
+	  (use-package eshell-git-prompt)
+
+	  (use-package eshell
+		:hook (eshell-first-time-mode . void/configure-eshell)
+		:config
+		(eshell-git-prompt-use-theme 'powerline))
+#+end_src
+
+** Color Support
+
+#+begin_src emacs-lisp
+
+  (use-package eterm-256color
+	:hook (term-mdode . eterm-256color-mode))
+
+#+end_src
+
