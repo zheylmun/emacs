@@ -5,7 +5,28 @@
 This repo contains a custom git configuration created by [[https://github.com/zheylmun][Zach Heylmun]] based heavily on the excellent [[https://github.com/daviwil/emacs-from-scratch][Emacs From Scratch]] repository and [[https://www.youtube.com/playlist?list=PLEoMzSkcN8oPH1au7H6B7bBJ4ZO7BXjSZ][video series]] by [[https://github.com/daviwil][David Wilson]]. It contains a very small [[./init.el][init.el]] which simply disables some UI elements, bootstraps package management, and loads the real configuration contained in [[./config.org][config.org]].
 
 * Installation
+** Emacs Installation
+*** Windows
+To install [[https://www.gnu.org/software/emacs/][Emacs]] on a Windows machine, use [[https://chocolatey.org][Chocolatey]].
 
+#+begin_src shell
+
+  choco install emacs
+
+#+end_src
+
+*** Macos
+
+To install [[https://www.gnu.org/software/emacs/][Emacs]] on Macos, use [[https://brew.sh][Homebrew]].  Best option so far seems to be [[https://github.com/d12frosted/homebrew-emacs-plus][Emacs-Plus]], as it supports native window management best in my experiments.
+
+#+begin_src shell
+
+  $ brew tap d12frosted/emacs-plus
+  $ brew install emacs-plus@28 [options] # Install emacs 28
+
+#+end_src
+
+** Config Setup
 This is a self boot-strapping configuration.  To use it simply clone this repo to the home directory, then start Emacs.
 
 #+begin_src sh
