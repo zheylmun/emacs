@@ -47,6 +47,9 @@
 
 	 ;; 8 character tabs are too damn large
 	 (setq-default tab-width 4)
+	 ;; Default behavior is case sensitive for sorting.
+	 ;; Just sort alphabetically
+	 (setq sort-fold-case t)
 
    #+end_src
 
@@ -87,7 +90,20 @@
 * UI Packages
 
   Set of packages to improve the look and functionality of the UI
-   
+  
+** Doom Modeline
+    
+   The Doom modeline provides a concise view of current mode functionality
+
+   #+begin_src emacs-lisp
+
+	 (use-package doom-modeline
+	   :ensure t
+	   :init (doom-modeline-mode 1)
+	   :custom ((doom-modeline-height 32)))
+
+   #+end_src
+
 ** Doom Themes
     
    #+begin_src emacs-lisp
@@ -102,18 +118,17 @@
 
    #+end_src
 
-** Doom Modeline
-    
-   The Doom modeline provides a concise view of current mode functionality
+** Multiple Cursors
 
-   #+begin_src emacs-lisp
+Add friendly mulit-editing
 
-	 (use-package doom-modeline
-	   :ensure t
-	   :init (doom-modeline-mode 1)
-	   :custom ((doom-modeline-height 32)))
+#+begin_src emacs-lisp
 
-   #+end_src
+  (use-package multiple-cursors
+	:config
+	(global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines))
+
+#+end_src
 
 ** Rainbow Delimiters
 
@@ -143,7 +158,7 @@
 	   :after projectile treemacs)
 
    #+end_src
-
+   
 * Help and navigation
    
 ** Ivy, Swiper, Counsel
@@ -160,6 +175,7 @@
 			  ("C-l" . ivy-alt-done)
 			  ("C-j" . ivy-next-line)
 			  ("C-k" . ivy-previous-line)
+			  ("C-M-J" . ivy-immediate-done)
 			  :map ivy-switch-buffer-map
 			  ("C-k" . ivy-previous-line)
 			  ("C-l" . ivy-done)
@@ -239,18 +255,14 @@
 
    #+begin_src emacs-lisp
 
-	 (use-package general
-	   :config
-	   (general-create-definer void/leader-keys
-		 :keymaps '(normal insert visual emacs)
-		 :prefix "SPC"
-		 :global-prefix "C-SPC")
-	   (void/leader-keys
-		 "to" '(:ignore t :which-key "toggles")
-		 "tt" '(counsel-load-theme :which-key "chose theme")))
+	 (setq mac-command-modifier 'meta)
 
-	 (general-define-key
-	  "C-M-j" 'counsel-switch-buffer)
+	 (use-package general :config (general-create-definer void/leader-keys
+	   :keymaps '(normal insert visual emacs) :prefix "SPC" :global-prefix
+	   "C-SPC") (void/leader-keys "to" '(:ignore t :which-key "toggles")
+	   "tt" '(counsel-load-theme :which-key "chose theme")))
+
+	 (general-define-key "C-M-j" 'counsel-switch-buffer)
 
    #+end_src
 
@@ -327,6 +339,45 @@
 
 * Org Mode
   
+** Org Babel Configuration
+
+   Org mode babel integration for emacs-lisp and python
+   
+   #+begin_src emacs-lisp
+
+	 (org-babel-do-load-languages
+	  'org-babel-load-languages
+	  '((emacs-lisp . t)
+		(python . t)))
+
+	 (setq org-confirm-babel-evaluate nil)
+
+	 (push '("conf-unix" . conf-unix) org-src-lang-modes)
+
+	 (require 'org-tempo )
+
+	 (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
+
+	 (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
+
+	 (add-to-list 'org-structure-template-alist '("py" . "src python"))
+
+   #+end_src
+
+** Org Bullets
+
+   Nice bullets
+   
+   #+begin_src emacs-lisp
+
+	 (use-package org-bullets
+	   :after org
+	   :hook( org-mode . org-bullets-mode )
+	   :custom
+	   (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
+
+   #+end_src
+   
 ** Org Mode Font Setup
 
    Configure some nice defaults for viewing org mode files.
@@ -404,40 +455,32 @@
 
    #+end_src
 
-** Org Babel Configuration
-   Org mode babel integration for emacs-lisp and python
-   #+begin_src emacs-lisp
+** Org Roam
 
-	 (org-babel-do-load-languages
-	  'org-babel-load-languages
-	  '((emacs-lisp . t)
-		(python . t)))
+I'll probably have something to say here eventually
 
-	 (setq org-confirm-babel-evaluate nil)
+#+begin_src emacs-lisp
+  (use-package org-roam
+  :ensure t
+  :init
+  (setq org-roam-v2-ack t) ;; Never had a 1.0 database, don't worry about it
+  :custom
+  (org-roam-directory (file-truename "~/.roam/"))
+  :bind (("C-c n l" . org-roam-buffer-toggle)
+		 ("C-c n f" . org-roam-node-find)
+		 ("C-c n g" . org-roam-graph)
+		 ("C-c n i" . org-roam-node-insert)
+		 ("C-c n c" . org-roam-capture)
+		 ;; Dailies
+		 ("C-c n j" . org-roam-dailies-capture-today)
+		 :map org-mode-map
+		 ("C-M-i" . completion-at-point))
+  :config
+  (org-roam-db-autosync-mode)
+  ;; If using org-roam-protocol
+  (require 'org-roam-protocol))
 
-	 (push '("conf-unix" . conf-unix) org-src-lang-modes)
-
-	 (require 'org-tempo )
-
-	 (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
-
-	 (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
-
-	 (add-to-list 'org-structure-template-alist '("py" . "src python"))
-
-   #+end_src
-
-** Org Bullets
-   Nice bullets
-   #+begin_src emacs-lisp
-
-	 (use-package org-bullets
-	   :after org
-	   :hook( org-mode . org-bullets-mode )
-	   :custom
-	   (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
-
-   #+end_src
+#+end_src
 * Development
 ** Tools
 *** Company
@@ -529,6 +572,14 @@
 		:config (counsel-projectile-mode))
 
 	#+end_src
+*** RipGrep
+[[https://github.com/nlamirault/ripgrep.el][Ripgrep]] provides blazing fast search capabilities. Integrated with Projectile via projectile-ripgrep
+#+begin_src emacs-lisp
+
+  (use-package ripgrep)
+  (use-package projectile-ripgrep
+	:after projectile ripgrep)
+#+end_src
 *** Whitespace Mode
 	#+begin_src emacs-lisp
 	  (require 'whitespace)
@@ -580,13 +631,29 @@
 
 	#+end_src
 
+*** Swift
+
+[[https:swift.org][Swift]] language support is added with the [[https://github.com/swift-emacs/swift-mode][swift-mode]] package.  Language server features are added with [[https://github.com/emacs-lsp/lsp-sourcekit][lsp-sourcekit]]. Finally, syntax checking is provided by
+**** TODO flycheck-integration
+#+begin_src emacs-lisp
+
+  (use-package lsp-sourcekit
+  :after lsp-mode
+  :config
+  (setq lsp-sourcekit-executable "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/sourcekit-lsp"))
+
+  
+  (use-package swift-mode
+	:hook (swift-mode . (lambda () (lsp))))
+
+#+end_src
 *** Yaml
 	#+begin_src emacs-lisp
 
 	  (use-package yaml-mode)
 
 	#+end_src
-
+	
 * Terminals and Shells
 
 ** All Terminals

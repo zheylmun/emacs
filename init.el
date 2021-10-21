@@ -77,20 +77,12 @@
 (require 'diminish)
 (require 'bind-key)
 
+
+
 ;; Load the config
 (org-babel-load-file (concat user-emacs-directory "config.org"))
 
+;; Don't edit my init on me:
+(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+
 ;;; End: init.el
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(vterm eterm-256color eterm-256-color yaml-mode lsp-dart dart-mode cmake-mode ccls counsel-projectile projectile ivy-xref lsp-ui lsp-mode forge flycheck exec-path-from-shell org-bullets visual-fill-column evil-collection evil general which-key helpful ivy-rich counsel ivy treemacs rainbow-delimiters doom-modeline doom-themes all-the-icons no-littering auto-package-update diminish use-package)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )

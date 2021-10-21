@@ -17,7 +17,7 @@ To install [[https://www.gnu.org/software/emacs/][Emacs]] on a Windows machine, 
 
 *** Macos
 
-To install [[https://www.gnu.org/software/emacs/][Emacs]] on Macos, use [[https://brew.sh][Homebrew]].  Best option so far seems to be [[https://github.com/d12frosted/homebrew-emacs-plus][Emacs-Plus]], as it supports native window management best in my experiments.
+To install [[https://www.gnu.org/software/emacs/][Emacs]] on Macos, use [[https://brew.sh][Homebrew]].  Best option so far seems to be [[https://github.com/d12frosted/homebrew-emacs-plus][Emacs-Plus]], as it supports native window management best in my testing.
 
 #+begin_src shell
 
