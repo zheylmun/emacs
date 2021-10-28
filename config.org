@@ -624,12 +624,33 @@ I'll probably have something to say here eventually
 
 	#+end_src
 
+*** Jenkins
+
+Add support for Jenkinsfiles
+
+#+begin_src emacs-lisp
+
+  (use-package jenkinsfile-mode)
+
+#+end_src
+
 *** Make
 	#+begin_src emacs-lisp
 
 	  (use-package make-mode)
 
 	#+end_src
+
+*** Python
+
+#+begin_src emacs-lisp
+(use-package lsp-python-ms
+  :ensure t
+  :init (setq lsp-python-ms-auto-install-server t)
+  :hook (python-mode . (lambda ()
+                          (require 'lsp-python-ms)
+                          (lsp))))  ; or lsp-deferred
+#+end_src 
 
 *** Swift
 
