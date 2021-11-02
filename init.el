@@ -43,6 +43,8 @@
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
+(require 'straight)
+
 (straight-use-package 'use-package)
 
 ;; Load the config

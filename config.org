@@ -154,9 +154,8 @@ Load evil super early so key bindings don't change when I goof my config
 
 	 (use-package doom-modeline
 	   :straight t
-	   :ensure t
 	   :init (doom-modeline-mode 1)
-	   :custom ((doom-modeline-height 32)))
+	   :custom ((doom-modeline-height 24)))
 
    #+end_src
 
@@ -174,6 +173,7 @@ Load evil super early so key bindings don't change when I goof my config
 	   (load-theme 'doom-monokai-classic t))
 
    #+end_src
+
 ** Multiple Cursors
 
 Add friendly mulit-editing
@@ -200,7 +200,9 @@ Add friendly mulit-editing
    #+end_src
 
 ** Treemacs
+
    [[https://github.com/Alexander-Miller/treemacs#treemacs---a-tree-layout-file-explorer-for-emacs][Treemacs]] provides a file and project explorer.  It gives a nice outline similar to many IDEs.
+   
    #+begin_src emacs-lisp
 	 (use-package treemacs
 	   :straight t
