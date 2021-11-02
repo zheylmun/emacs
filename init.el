@@ -30,54 +30,20 @@
 (setq inhibit-startup-message t)
 (setq initial-scratch-message "")
 
-;;; Set up package
-(require 'package)
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (bootstrap-version 5))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
 
-;; Add the package archives
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-(add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
-(add-to-list 'package-archives '("elpa" . "https://elpa.gnu.org/packages/") t)
-
-(when (boundp 'package-pinned-packages)
-  (setq package-pinned-packages
-        '((org-plus-contrib . "org"))))
-
-;; With the configuration done, initialize the package manager
-(package-initialize)
-
-;;; Bootstrap use-package
-;; use-package is used to configure the rest of the packages.
-;; Only force refresh if we need one of the 3 packages bootstrapped
-(unless (and (package-installed-p 'use-package)
-			 (package-installed-p 'diminish)
-			 (package-installed-p 'bind-key))
-  
-  (package-refresh-contents))
-
-;; Install use-package if needed
-(unless (package-installed-p 'use-package)
-  (package-install 'use-package))
-
-;; No need to require until needed
-(eval-when-compile
-  (require 'use-package))
-
-;; Make sure packages are present before trying to configure them
-(setq use-package-always-ensure t)
-
-;; Check if diminish is present, install if not
-(unless (package-installed-p 'diminish)
-  (package-install 'diminish))
-
-;; Check if bind-key is present, install if no
-(unless (package-installed-p 'bind-key)
-  (package-install 'bind-key))
-
-;; Require diminish and bind key before they're used in configuring packages
-(require 'diminish)
-(require 'bind-key)
-
-
+(straight-use-package 'use-package)
 
 ;; Load the config
 (org-babel-load-file (concat user-emacs-directory "config.org"))
