@@ -69,7 +69,57 @@
 		   `((".*" ,(no-littering-expand-var-file-name "auto-save/") t)))
 
    #+end_src
+
+* Evil first, Evil Always
+
+Load evil super early so key bindings don't change when I goof my config
+
+** EVIL
+
+   [[eww:https://github.com/emacs-evil/evil][Evil]] mode brings Vim keybindings to Emacs.
    
+   #+begin_src emacs-lisp
+	 (defun void/evil-hook ()
+	   (dolist (mode '(custom-mode
+					   eshell-mode
+					   git-rebase-mode
+					   erc-mode
+					   circe-server-mode
+					   circe-chat-mode
+					   circe-query-mode
+					   sauron-mode
+					   term-mode))
+		 (add-to-list 'evil-emacs-state-modes mode)))
+
+	 (use-package evil
+	   :init
+	   (setq evil-want-integration t)
+	   (setq evil-want-keybinding nil)
+	   (setq evil-want-C-u-scroll t)
+	   (setq evil-want-C-i-jump nil)
+	   :hook (evil-mode . void/evil-hook)
+	   :config
+	   (evil-mode 1)
+	   (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
+	   (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
+	   ;; Use visual line motions everywhere
+	   (evil-global-set-key 'motion "j" 'evil-next-visual-line)
+	   (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
+	   (evil-set-initial-state 'messages-buffer-mode 'normal) 
+	   (evil-set-initial-state 'dashboard-mode 'normal))
+
+   #+end_src
+
+** Evil Collection
+
+   [[https://github.com/emacs-evil/evil-collection][Evil Collection]] Provides a sensible set of file types and automatically configures Evil mode for them
+
+   #+begin_src emacs-lisp
+
+	 (use-package evil-collection)
+
+   #+end_src
+
 * Fonts
 
   #+begin_src emacs-lisp
@@ -263,55 +313,6 @@ Add friendly mulit-editing
 	   "tt" '(counsel-load-theme :which-key "chose theme")))
 
 	 (general-define-key "C-M-j" 'counsel-switch-buffer)
-
-   #+end_src
-
-** EVIL
-
-   [[eww:https://github.com/emacs-evil/evil][Evil]] mode brings Vim keybindings to Emacs.
-   
-   #+begin_src emacs-lisp
-	 (defun void/evil-hook ()
-	   (dolist (mode '(custom-mode
-					   eshell-mode
-					   git-rebase-mode
-					   erc-mode
-					   circe-server-mode
-					   circe-chat-mode
-					   circe-query-mode
-					   sauron-mode
-					   term-mode))
-		 (add-to-list 'evil-emacs-state-modes mode)))
-
-	 (use-package evil
-	   :init
-	   (setq evil-want-integration t)
-	   (setq evil-want-keybinding nil)
-	   (setq evil-want-C-u-scroll t)
-	   (setq evil-want-C-i-jump nil)
-	   :hook (evil-mode . void/evil-hook)
-	   :config
-	   (evil-mode 1)
-
-	   ;; Since I have the fancy keyboard I'm not gonna remap to add backspace, as it's under my thumb
-	   (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
-	   (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
-
-	   ;; Use visual line motions everywhere
-	   (evil-global-set-key 'motion "j" 'evil-next-visual-line)
-	   (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
-	   (evil-set-initial-state 'messages-buffer-mode 'normal) 
-	   (evil-set-initial-state 'dashboard-mode 'normal))
-
-   #+end_src
-
-** Evil Collection
-
-   [[https://github.com/emacs-evil/evil-collection][Evil Collection]] Provides a sensible set of file types and automatically configures Evil mode for them
-
-   #+begin_src emacs-lisp
-
-	 (use-package evil-collection)
 
    #+end_src
 
