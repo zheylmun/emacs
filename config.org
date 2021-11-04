@@ -214,9 +214,11 @@ Add friendly mulit-editing
 	 (use-package treemacs-evil
 	   :straight t
 	   :after evil treemacs)
+
 	 (use-package treemacs-magit
 	   :straight t
 	   :after magit treemacs)
+
 	 (use-package treemacs-projectile
 	   :straight t
 	   :after projectile treemacs)
@@ -224,12 +226,88 @@ Add friendly mulit-editing
    #+end_src
    
 * Help and navigation
-   
+
+** Selectrum
+#+begin_src emacs-lisp 
+
+  (use-package prescient
+	:straight t)
+
+  (use-package selectrum-prescient
+	:straight t
+	:after selectrum prescient
+	:config
+	;; to make sorting and filtering more intelligent
+	(selectrum-prescient-mode +1))
+
+  (use-package selectrum
+	 :straight t
+	 :config
+	 (selectrum-mode +1)
+	 ;; save command history on disk, so the sorting gets more intelligent over time
+	 (prescient-persist-mode +1))
+
+   (use-package savehist
+	 :straight t
+	 :init
+	 (savehist-mode))
+
+   (use-package marginalia
+	 :straight t
+	 :after selectrum 
+	 :custom
+	 (marginalia-annotators '(marginalia-annotators-heavy marginalia-annotators-light nil))
+	 :init
+	 (marginalia-mode))
+
+  (use-package ctrlf
+	 :straight t
+	 :config
+	 (ctrlf-mode +1))
+
+#+end_src
+
+** Vertico
+
+#+begin_src emacs-lisp :tangle no
+  (use-package vertico
+	:straight t
+	:bind (:map vertico-map
+				("C-j" . vertico-next)
+				("C-k" . vertico-previous)
+				("C-f" . vertico-exit)
+				:map minibuffer-local-map
+				("M-h" . backward-kill-word))
+	:custom
+	(vertico-cycle t)
+	:init
+	(vertico-mode))
+
+  (use-package savehist
+	:straight t
+	:init
+	(savehist-mode))
+
+  (use-package marginalia
+	:straight t
+	:after vertico
+	:ensure t
+	:custom
+	(marginalia-annotators '(marginalia-annotators-heavy marginalia-annotators-light nil))
+	:init
+	(marginalia-mode))
+  (use-package ctrlf
+	:straight t
+	:config
+	(ctrlf-mode +1))
+  
+#+end_src
+
 ** Ivy, Swiper, Counsel
 
    [[eww:https://github.com/abo-abo/swiper][Ivy, Swiper, and Counsel]] provide a generic completion mechanism for emacs.  Replace the default search and minibuffer capabilities with the enhanced features from Ivy. Add more comprehensive information with [[eww:https://github.com/Yevgnen/ivy-rich][Ivy-Rich]].
 
-   #+begin_src emacs-lisp
+   #+begin_src emacs-lisp :tangle no
 
 	 (use-package ivy
 	   :straight t
@@ -274,6 +352,9 @@ Add friendly mulit-editing
 
 	 (use-package prescient
 	   :straight t)
+	 (use-package selectrum-prescient
+	   :straight t
+	   :after selectrum prescient)
 	 (use-package ivy-prescient
 	   :straight t
 	   :after ivy prescient)
@@ -511,121 +592,146 @@ I'll probably have something to say here eventually
 ** Tools
 
 *** Company
-	[[http://company-mode.github.io/][Company]] is a completion framework for Emacs.  It includes backends for many common tasks.
-	#+begin_src emacs-lisp
 
-	  (use-package company
-		:straight t)
-	  (add-hook 'after-init-hook 'global-company-mode)
+[[http://company-mode.github.io/][Company]] is a completion framework for Emacs.  It includes backends for many common tasks.
 
-	#+end_src
+#+begin_src emacs-lisp
 
-*** E Shell
-    Emacs is frequently started from the UI instead of terminal.  Make sure the path still works.
-	#+begin_src emacs-lisp
+  (use-package company
+	:straight t)
+  (add-hook 'after-init-hook 'global-company-mode)
 
-	  (use-package exec-path-from-shell
-		:straight t)
+#+end_src
 
-	  (when (memq window-system '(mac ns x))
-		(exec-path-from-shell-initialize))
-
-	#+end_src
 *** Flycheck
-	[[https://www.flycheck.org/en/latest/index.html][Flycheck]] provides on the fly syntax checking.
-	#+begin_src emacs-lisp
-	  (use-package flycheck
-		:straight t
-		:init (global-flycheck-mode))
-	#+end_src
+
+[[https://www.flycheck.org/en/latest/index.html][Flycheck]] provides on the fly syntax checking.
+
+#+begin_src emacs-lisp
+
+  (use-package flycheck
+	:straight t
+	:init (global-flycheck-mode))
+
+#+end_src
+
 *** Forge
-    [[https://github.com/magit/forge][Forge]] provides integration to advanced git hosting features from providers such as GitHub and GitLab.
-	#+begin_src emacs-lisp
 
-	  (use-package forge
-		:straight t)
+[[https://github.com/magit/forge][Forge]] provides integration to advanced git hosting features from providers such as GitHub and GitLab.
+	
+#+begin_src emacs-lisp
 
-	#+end_src
+  (use-package forge
+	:straight t)
+
+#+end_src
+
 *** LSP
-    [[https://github.com/emacs-lsp/lsp-mode][lsp-mode]] provides advanced language server based features to Emacs.
-	#+begin_src emacs-lisp
 
-	  (defun void/lsp-mode-setup ()
-		(setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
-		(lsp-headerline-breadcrumb-mode))
+[[https://github.com/emacs-lsp/lsp-mode][lsp-mode]] provides advanced language server based features to Emacs.
 
-	  (use-package lsp-mode
-		:straight t
-		:init
-		;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
-		(setq lsp-keymap-prefix "C-c l")
-		:commands(lsp lsp-deferred)
-		:config
-		(lsp-enable-which-key-integration))
+#+begin_src emacs-lisp
 
-	  (use-package lsp-ui
-		:straight t
-		:hook (lsp-mode . lsp-ui-mode)
-		:custom
-		(lsp-ui-doc-position 'bottom))
+  (defun void/lsp-mode-setup ()
+	(setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
+	(lsp-headerline-breadcrumb-mode))
 
-	  (use-package ivy-xref
-		:straight t
-		:init
-		(setq xref-show-definitions-function #'ivy-xref-show-defs))
+  (use-package lsp-mode
+	:straight t
+	:init
+	;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
+	(setq lsp-keymap-prefix "C-c l")
+	:commands(lsp lsp-deferred)
+	:config
+	(lsp-enable-which-key-integration))
 
-	#+end_src
+  (use-package lsp-ui
+	:straight t
+	:hook (lsp-mode . lsp-ui-mode)
+	:custom
+	(lsp-ui-doc-position 'bottom))
+
+  (use-package ivy-xref
+	:straight t
+	:init
+	(setq xref-show-definitions-function #'ivy-xref-show-defs))
+
+#+end_src
+
 *** Magit
-    [[https://magit.vc/][Magit]] is an incredible, text based git client.  It has a beautiful, text based graph, and all of the power of the command line interface (+ some really nice convenience features).
-	#+begin_src emacs-lisp
-	  
-	  (use-package magit
-		:straight t)
 
-	#+end_src
+[[https://magit.vc/][Magit]] is an incredible, text based git client.  It has a beautiful, text based graph, and all of the power of the command line interface (+ some really nice convenience features).
+
+#+begin_src emacs-lisp
+
+  (use-package magit
+	:straight t)
+
+#+end_src
+
 *** Projectile
 	
     [[https://projectile.mx][Projectile]] is a project interaction library for Emacs that adds capabilities for quickly navigating around the files within a project.
-	#+begin_src emacs-lisp
+	
+#+begin_src emacs-lisp
 
-	  (use-package projectile
-		:diminish projectile-mode
-		:config (projectile-mode)
-		:custom ((projectile-completion-system 'ivy))
-		:bind-keymap
-		("C-c p" . projectile-command-map)
-		:init
-		;; NOTE: Set this to the folder where you keep your Git repos!
+  (use-package projectile
+	:diminish projectile-mode
+	:config (projectile-mode)
+	:custom ((projectile-completion-system 'ivy))
+	:bind-keymap
+	("C-c p" . projectile-command-map)
+	:init
+	;; NOTE: Set this to the folder where you keep your Git repos!
 
-		(when (file-directory-p "~/dev/")
-		  (setq projectile-project-search-path '("~/dev")))
-		(setq projectile-switch-project-action #'projectile-dired))
+	(when (file-directory-p "~/dev/")
+	  (setq projectile-project-search-path '("~/dev")))
+	(setq projectile-switch-project-action #'projectile-dired))
 
-	  (use-package counsel-projectile
-		:straight t
-		:config (counsel-projectile-mode))
+  (use-package counsel-projectile
+	:straight t
+	:config (counsel-projectile-mode))
 
-	#+end_src
+#+end_src
+
 *** RipGrep
+
 [[https://github.com/nlamirault/ripgrep.el][Ripgrep]] provides blazing fast search capabilities. Integrated with Projectile via projectile-ripgrep
+
 #+begin_src emacs-lisp
 
   (use-package ripgrep
 	:straight t)
+
   (use-package projectile-ripgrep
 	:straight t
 	:after projectile ripgrep)
+
 #+end_src
-*** Whitespace Mode
-	#+begin_src emacs-lisp
-	  (require 'whitespace)
 
-	  (setq whitespace-style '(face trailing indentation::tab space-before-tab::tab space-after-tab))
-											  ; turn on whitespace-mode in any 'programming mode'
-	  (add-hook 'prog-mode-hook (lambda () (whitespace-mode t)))
+*** Whitespace
 
-	#+end_src
+Cleanup
+#+begin_src emacs-lisp
+
+  (require 'whitespace)
+
+  (setq whitespace-style
+		'(face trailing indentation::tab space-before-tab::tab space-after-tab))
+
+  (use-package ws-butler
+	:straight t
+	:config
+	(ws-butler-global-mode 1))
+
+  (add-hook 'prog-mode-hook ; turn on whitespace-mode in any 'programming mode'
+			(lambda ()
+			  (whitespace-mode t)))
+
+#+end_src
+
 ** Language Support
+
 *** C/C++
 
     CCLS is a C/C++ indexer which uses the compilation commands and clang frontend to ensure that the indexing is accurate.
@@ -728,14 +834,14 @@ Add support for Jenkinsfiles
 
 ** All Terminals
 
-   Configuration for terminals which all use
+Configuration for terminals which all use
 
-   #+begin_src emacs-lisp
+#+begin_src emacs-lisp
 
-	 (setq explicit-shell-file-name "zsh")
-	 (setq term-prompt-regexp "^#$%>\n]*[#$%>] *")
+  (setq explicit-shell-file-name "zsh")
+  (setq term-prompt-regexp "^#$%>\n]*[#$%>] *")
 
-   #+end_src
+#+end_src
 
 ** VTerm
 
@@ -750,35 +856,41 @@ Add support for Jenkinsfiles
    #+end_src
 
 ** EShell
-   EShell is Emacs built in shell.
 
-   #+begin_src emacs-lisp
-	 (defun void/configure-eshell ()
-	   ;; Save a command history
-	   (add-hook 'eshell-pre-command-hook 'eshell-save-some-history)
+Emacs is frequently started from the UI instead of terminal.  Make sure the path still works.
 
-	   ;; Truncate buffer for performance
-	   (add-to-list 'eshell-output-filter-functions 'eshell-truncate-buffer)
-	   ;; Bind C-r to pull up history buffer
-	   (evil-define-key '(normal insert visual) eshell-mode-map (kbd "C-r") 'counsel-esh-history)
+#+begin_src emacs-lisp
+  (defun void/configure-eshell ()
+	;; Save a command history
+	(add-hook 'eshell-pre-command-hook 'eshell-save-some-history)
 
-	   ;; Renormalize keymaps
-	   (evil-normalize-keymaps)
+	;; Truncate buffer for performance
+	(add-to-list 'eshell-output-filter-functions 'eshell-truncate-buffer)
+	;; Bind C-r to pull up history buffer
+	(evil-define-key '(normal insert visual) eshell-mode-map (kbd "C-r") 'counsel-esh-history)
 
-	   (setq eshell-history-size 10000
-			 eshell-buffer-maximum-lines 10000
-			 eshell-hist-ignoredups t
-			 eshell-scroll-to-bottom-on-input t))
+	;; Renormalize keymaps
+	(evil-normalize-keymaps)
 
-	 (use-package eshell-git-prompt
-	   :straight t)
+	(setq eshell-history-size 10000
+		  eshell-buffer-maximum-lines 10000
+		  eshell-hist-ignoredups t
+		  eshell-scroll-to-bottom-on-input t))
 
-	 (use-package eshell
-	   :straight t
-	   :hook (eshell-first-time-mode . void/configure-eshell)
-	   :config
-	   (eshell-git-prompt-use-theme 'powerline))
-   #+end_src
+  (use-package exec-path-from-shell
+	:straight t)
+
+  (when (memq window-system '(mac ns x))
+	(exec-path-from-shell-initialize))
+  (use-package eshell-git-prompt
+	:straight t)
+
+  (use-package eshell
+	:straight t
+	:hook (eshell-first-time-mode . void/configure-eshell)
+	:config
+	(eshell-git-prompt-use-theme 'powerline))
+#+end_src
 
 ** Color Support
 
