@@ -10,127 +10,129 @@
 
   Automagically update packages weekly if updates are available.
 
-  #+begin_src emacs-lisp
+#+begin_src emacs-lisp
 
-	;; Automatically pull updates weekly and hide results
-	(use-package auto-package-update
-	  :straight t
-	  :custom
-	  (auto-package-update-interval 7)
-	  (auto-package-update-hide-results t)
-	  :config
-	  (auto-package-update-maybe))
+  ;; Automatically pull updates weekly and hide results
+  (use-package auto-package-update
+	:straight t
+	:custom
+	(auto-package-update-interval 7)
+	(auto-package-update-hide-results t)
+	:config
+	(auto-package-update-maybe))
 
-  #+end_src
+#+end_src
 
 * UI Configuration
 
-  The following section configures the basics of the stock Emacs UI. Inint.el also disables several UI elements, the startup message.  Here we configure default buffer rendering and UI behavior.
+  The following section configures the basics of the stock Emacs UI. Inint.el also disables several UI elements as well as the startup message.  Here we configure default buffer rendering and UI behavior.
 
 ** Basic UI elements
 
-   #+begin_src emacs-lisp
+#+begin_src emacs-lisp
 
-	 ;; Start text 16 pixels from the left edge of the buffer
-	 (set-fringe-mode 16)
+  ;; Start text 16 pixels from the left edge of the buffer
+  (set-fringe-mode 16)
 
-	 ;; Show column numbers in the mini-buffer
-	 (column-number-mode)
+  ;; Show column numbers in the mini-buffer
+  (column-number-mode t)
 
-	 ;; Enable line numbers globally
-	 (global-display-line-numbers-mode t)
+  ;; Enable line numbers globally
+  (global-display-line-numbers-mode t)
 
-	 ;; Disable line numbers in org-mode, term-mode and eshell-mode
-	 (dolist (mode '(org-mode-hook
-					 term-mode-hook
-					 eshell-mode-hook))
-	   (add-hook mode (lambda () (display-line-numbers-mode 0))))
+  ;; Disable line numbers in org-mode, term-mode and eshell-mode
+  (dolist (mode '(org-mode-hook
+				  term-mode-hook
+				  eshell-mode-hook))
+	(add-hook mode (lambda () (display-line-numbers-mode 0))))
 
-	 ;; 8 character tabs are too damn large
-	 (setq-default tab-width 4)
-	 ;; Default behavior is case sensitive for sorting.
-	 ;; Just sort alphabetically
-	 (setq sort-fold-case t)
+  ;; 8 character tabs are too damn large
+  (setq-default tab-width 4)
+  ;; Default behavior is case sensitive for sorting.
+  ;; Just sort alphabetically
+  (setq sort-fold-case t)
 
-   #+end_src
+#+end_src
 
 ** File backup behavior
 
-   Default file backup behavior is awful.  Make it less awful:
+Default file backup behavior is awful.  Make it less awful:
 
-   #+begin_src emacs-lisp
+#+begin_src emacs-lisp
 
-	 (setq user-emacs-directory "~/.cache/emacs")
+  (setq user-emacs-directory "~/.cache/emacs")
 
-	 (use-package no-littering
-	   :straight t)
+  (use-package no-littering
+	:straight t)
 
-	 ;; no-littering doesn't set this by default so we must place
-	 ;; auto save files in the same path as it uses for sessions
-	 (setq auto-save-file-name-transforms
-		   `((".*" ,(no-littering-expand-var-file-name "auto-save/") t)))
+  ;; no-littering doesn't set this by default so we must place
+  ;; auto save files in the same path as it uses for sessions
+  (setq auto-save-file-name-transforms
+		`((".*" ,(no-littering-expand-var-file-name "auto-save/") t)))
 
-   #+end_src
+#+end_src
 
 * Evil first, Evil Always
 
-Load evil super early so key bindings don't change when I goof my config
+Load evil super early so my key bindings don't change when I goof my config
 
 ** EVIL
 
    [[eww:https://github.com/emacs-evil/evil][Evil]] mode brings Vim keybindings to Emacs.
    
-   #+begin_src emacs-lisp
-	 (defun void/evil-hook ()
-	   (dolist (mode '(custom-mode
-					   eshell-mode
-					   git-rebase-mode
-					   erc-mode
-					   circe-server-mode
-					   circe-chat-mode
-					   circe-query-mode
-					   sauron-mode
-					   term-mode))
-		 (add-to-list 'evil-emacs-state-modes mode)))
+#+begin_src emacs-lisp
 
-	 (use-package evil
-	   :straight t
-	   :init
-	   (setq evil-want-integration t)
-	   (setq evil-want-keybinding nil)
-	   (setq evil-want-C-u-scroll t)
-	   (setq evil-want-C-i-jump nil)
-	   :hook (evil-mode . void/evil-hook)
-	   :config
-	   (evil-mode 1)
-	   (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
-	   (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
-	   ;; Use visual line motions everywhere
-	   (evil-global-set-key 'motion "j" 'evil-next-visual-line)
-	   (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
-	   (evil-set-initial-state 'messages-buffer-mode 'normal) 
-	   (evil-set-initial-state 'dashboard-mode 'normal))
+  (defun void/evil-hook ()
+	(dolist (mode '(custom-mode
+					eshell-mode
+					git-rebase-mode
+					erc-mode
+					circe-server-mode
+					circe-chat-mode
+					circe-query-mode
+					sauron-mode
+					term-mode))
+	  (add-to-list 'evil-emacs-state-modes mode)))
 
-   #+end_src
+  (use-package evil
+	:straight t
+	:init
+	(setq evil-want-integration t)
+	(setq evil-want-keybinding nil)
+	(setq evil-want-C-u-scroll t)
+	(setq evil-want-C-i-jump nil)
+	:hook (evil-mode . void/evil-hook)
+	:config
+	(evil-mode 1)
+	(define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
+	(define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
+	;; Use visual line motions everywhere
+	(evil-global-set-key 'motion "j" 'evil-next-visual-line)
+	(evil-global-set-key 'motion "k" 'evil-previous-visual-line)
+	(evil-set-initial-state 'messages-buffer-mode 'normal)
+	(evil-set-initial-state 'dashboard-mode 'normal))
+
+#+end_src
 
 ** Evil Collection
 
-   [[https://github.com/emacs-evil/evil-collection][Evil Collection]] Provides a sensible set of file types and automatically configures Evil mode for them
+[[https://github.com/emacs-evil/evil-collection][Evil Collection]] Provides a sensible set of file types and automatically configures Evil mode for them
 
-   #+begin_src emacs-lisp
+#+begin_src emacs-lisp
 
-	 (use-package evil-collection
-	   :straight t)
+  (use-package evil-collection
+	:straight t)
 
-   #+end_src
+#+end_src
 
 * Fonts
 
-  #+begin_src emacs-lisp
+[[https://github.com/tonsky/FiraCode][Fira Code]] is a beautiful, open source font for programming. It has very pretty ligatures for common programming symbol combinations.
 
-	;; Fira Code Retina is a beautiful, mono-spaced font with nice ligatures for programming symbols
+#+begin_src emacs-lisp
+
 	;; Used as default font for most things
-	(set-face-attribute 'default nil :font "Fira Code Retina" :height 140)
+	(set-face-attribute 'default nil :font "Fira Code Retina" :height 120)
 
 	(use-package all-the-icons
 	  :straight t)
@@ -140,39 +142,39 @@ Load evil super early so key bindings don't change when I goof my config
 	(if(not(find-font(font-spec :name "all-the-icons")))
 		(all-the-icons-install-fonts 0))
 
-  #+end_src
+#+end_src
    
 * UI Packages
 
-  Set of packages to improve the look and functionality of the UI
+Set of packages to improve the look and functionality of the UI
   
 ** Doom Modeline
     
-   The Doom modeline provides a concise view of current mode functionality
+The Doom modeline provides a concise view of current mode functionality
 
-   #+begin_src emacs-lisp
+#+begin_src emacs-lisp
 
-	 (use-package doom-modeline
-	   :straight t
-	   :init (doom-modeline-mode 1)
-	   :custom ((doom-modeline-height 24)))
+  (use-package doom-modeline
+	:straight t
+	:init (doom-modeline-mode 1)
+	:custom ((doom-modeline-height 24)))
 
-   #+end_src
+#+end_src
 
 ** Doom Themes
     
-   #+begin_src emacs-lisp
+#+begin_src emacs-lisp
 
-	 (use-package doom-themes
-	   :straight t
-	   :config
-	   (doom-themes-visual-bell-config)
-	   (doom-themes-treemacs-config)
-	   (doom-themes-org-config)
-	   :init
-	   (load-theme 'doom-monokai-classic t))
+  (use-package doom-themes
+	:straight t
+	:config
+	(doom-themes-visual-bell-config)
+	(doom-themes-treemacs-config)
+	(doom-themes-org-config)
+	:init
+	(load-theme 'doom-one t))
 
-   #+end_src
+#+end_src
 
 ** Multiple Cursors
 
@@ -181,7 +183,7 @@ Add friendly mulit-editing
 #+begin_src emacs-lisp
 
   (use-package multiple-cursors
-    :straight t
+	:straight t
 	:config
 	(global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines))
 
@@ -189,180 +191,102 @@ Add friendly mulit-editing
 
 ** Rainbow Delimiters
 
-   [[eww:https://github.com/Fanael/rainbow-delimiters][Rainbow delimiters]] makes it much easier to match up scope delimiters such as parenthesis
+[[eww:https://github.com/Fanael/rainbow-delimiters][Rainbow delimiters]] makes it much easier to match up scope delimiters such as parenthesis
 
-   #+begin_src emacs-lisp
+#+begin_src emacs-lisp
 
-	 (use-package rainbow-delimiters
-	   :straight t
-	   :hook (prog-mode . rainbow-delimiters-mode))
-
-   #+end_src
-
-** Treemacs
-
-   [[https://github.com/Alexander-Miller/treemacs#treemacs---a-tree-layout-file-explorer-for-emacs][Treemacs]] provides a file and project explorer.  It gives a nice outline similar to many IDEs.
-   
-   #+begin_src emacs-lisp
-	 (use-package treemacs
-	   :straight t
-	   :ensure t
-	   :defer t
-	   :init(with-eval-after-load 'winum
-			  (define-key winum-keymap (kbd "M-0") #'treemacs-select-window)))
-
-	 (use-package treemacs-evil
-	   :straight t
-	   :after evil treemacs)
-
-	 (use-package treemacs-magit
-	   :straight t
-	   :after magit treemacs)
-
-	 (use-package treemacs-projectile
-	   :straight t
-	   :after projectile treemacs)
-
-   #+end_src
-   
-* Help and navigation
-
-** Selectrum
-#+begin_src emacs-lisp 
-
-  (use-package prescient
-	:straight t)
-
-  (use-package selectrum-prescient
+  (use-package rainbow-delimiters
 	:straight t
-	:after selectrum prescient
-	:config
-	;; to make sorting and filtering more intelligent
-	(selectrum-prescient-mode +1))
-
-  (use-package selectrum
-	 :straight t
-	 :config
-	 (selectrum-mode +1)
-	 ;; save command history on disk, so the sorting gets more intelligent over time
-	 (prescient-persist-mode +1))
-
-   (use-package savehist
-	 :straight t
-	 :init
-	 (savehist-mode))
-
-   (use-package marginalia
-	 :straight t
-	 :after selectrum 
-	 :custom
-	 (marginalia-annotators '(marginalia-annotators-heavy marginalia-annotators-light nil))
-	 :init
-	 (marginalia-mode))
-
-  (use-package ctrlf
-	 :straight t
-	 :config
-	 (ctrlf-mode +1))
+	:hook (prog-mode . rainbow-delimiters-mode))
 
 #+end_src
 
+** Treemacs
+
+[[https://github.com/Alexander-Miller/treemacs#treemacs---a-tree-layout-file-explorer-for-emacs][Treemacs]] provides a file and project explorer.  It gives a nice outline similar to many IDEs.
+   
+#+begin_src emacs-lisp
+  (use-package treemacs
+	:straight t
+	:ensure t
+	:defer t
+	:init(with-eval-after-load 'winum
+		   (define-key winum-keymap (kbd "M-0") #'treemacs-select-window)))
+
+  (use-package treemacs-evil
+	:straight t
+	:after evil treemacs)
+
+  (use-package treemacs-magit
+	:straight t
+	:after magit treemacs)
+
+  (use-package treemacs-projectile
+	:straight t
+	:after projectile treemacs)
+
+#+end_src
+   
+* Help and navigation
+
 ** Vertico
 
-#+begin_src emacs-lisp :tangle no
-  (use-package vertico
-	:straight t
-	:bind (:map vertico-map
-				("C-j" . vertico-next)
-				("C-k" . vertico-previous)
-				("C-f" . vertico-exit)
-				:map minibuffer-local-map
-				("M-h" . backward-kill-word))
-	:custom
-	(vertico-cycle t)
-	:init
-	(vertico-mode))
+#+begin_src emacs-lisp
+	(use-package vertico
+	  :straight t
+	  :bind (:map vertico-map
+				  ("C-j" . vertico-next)
+				  ("C-k" . vertico-previous)
+				  ("C-f" . vertico-exit)
+				  :map minibuffer-local-map
+				  ("M-h" . backward-kill-word))
+	  :custom
+	  (vertico-cycle t)
+	  :init
+	  (vertico-mode))
 
-  (use-package savehist
-	:straight t
-	:init
-	(savehist-mode))
+	(use-package savehist
+	  :straight t
+	  :init
+	  (savehist-mode))
 
-  (use-package marginalia
-	:straight t
-	:after vertico
-	:ensure t
-	:custom
-	(marginalia-annotators '(marginalia-annotators-heavy marginalia-annotators-light nil))
-	:init
-	(marginalia-mode))
+	(use-package marginalia
+	  :straight t
+	  :after vertico
+	  :ensure t
+	  :custom
+	  (marginalia-annotators '(marginalia-annotators-heavy marginalia-annotators-light nil))
+	  :init
+	  (marginalia-mode))
+
   (use-package ctrlf
 	:straight t
 	:config
 	(ctrlf-mode +1))
-  
+
+  (use-package orderless
+	:straight t)
+
+  (setq completion-styles '(orderless)
+		completion-category-defaults nil
+		completion-category-overrides '((file (styles . (partial-completion)))))
+
+
+
 #+end_src
 
-** Ivy, Swiper, Counsel
-
-   [[eww:https://github.com/abo-abo/swiper][Ivy, Swiper, and Counsel]] provide a generic completion mechanism for emacs.  Replace the default search and minibuffer capabilities with the enhanced features from Ivy. Add more comprehensive information with [[eww:https://github.com/Yevgnen/ivy-rich][Ivy-Rich]].
-
-   #+begin_src emacs-lisp :tangle no
-
-	 (use-package ivy
-	   :straight t
-	   :diminish
-	   :bind (("C-s" . swiper)
-			  :map ivy-minibuffer-map
-			  ("TAB" . ivy-alt-done)
-			  ("C-l" . ivy-alt-done)
-			  ("C-j" . ivy-next-line)
-			  ("C-k" . ivy-previous-line)
-			  ("C-M-J" . ivy-immediate-done)
-			  :map ivy-switch-buffer-map
-			  ("C-k" . ivy-previous-line)
-			  ("C-l" . ivy-done)
-			  ("C-d" . ivy-switch-buffer-kill)
-			  :map ivy-reverse-i-search-map
-			  ("C-k" . ivy-previous-line)
-			  ("C-d" . ivy-reverse-i-search-kill))
-	   :config
-	   (ivy-mode 1))
-
-	 (use-package counsel
-	   :straight t
-	   :bind(( "M-x" . counsel-M-x)
-			 ("C-x b" . counsel-ibuffer)
-			 ("C-x C-f" . counsel-find-file)
-			 :map minibuffer-local-map
-			 ("C-r" . 'counsel-minibuffer-history)))
-
-	 (use-package ivy-rich
-	   :straight t
-	   :after ivy
-	   :init
-	   (ivy-rich-mode 1))
-
-   #+end_src
-
 ** Prescient
-   [[https://github.com/raxod502/prescient.el][Prescient]] is a sorting and filtering extension which improves the usability of suggestions by from Ivy, Company
+   [[https://github.com/raxod502/prescient.el][Prescient]] is a sorting and filtering extension which improves the usability of suggestions by from vertico, Company
 
-   #+begin_src emacs-lisp
+#+begin_src emacs-lisp
 
-	 (use-package prescient
-	   :straight t)
-	 (use-package selectrum-prescient
-	   :straight t
-	   :after selectrum prescient)
-	 (use-package ivy-prescient
-	   :straight t
-	   :after ivy prescient)
-	 (use-package company-prescient
-	   :straight t
-	   :after company prescient)
+  (use-package prescient
+	:straight t)
+  (use-package company-prescient
+	:straight t
+	:after company prescient)
 
-   #+end_src
+#+end_src
 
 ** Helpful
 
@@ -397,7 +321,7 @@ Add friendly mulit-editing
 	   (setq which-key-idle-delay 0.3))
 
    #+end_src
-
+   
 * Key Bindings
 
   Packages and configuration related to key bindings
@@ -902,3 +826,47 @@ Emacs is frequently started from the UI instead of terminal.  Make sure the path
 
    #+end_src
 
+
+* Email
+#+begin_src emacs-lisp :tangle no
+  (use-package mu4e
+  :config
+  (require 'org-mu4e)
+  ;; Refresh mail using isync every 10 minutes
+  (setq mu4e-update-interval (* 10 60))
+  (setq mu4e-get-mail-command "mbsync -a")
+  (setq mu4e-maildir "~/mail")
+
+  ;; Set up vertico for completions
+  (setq mu4e-completing-read-function #'vertico--advice)
+  ;; Force Mu4e to change filenames when moving messages to different folders
+  (setq mu4e-change-filenames-when-moving t)
+  (setq mu4e-contexts
+		'(,(make-mu4e-context
+			:name "Voidstar"
+			:match-func (lambda (msg)
+						  (when msg
+							(string-prefix-p "/voidstar"
+											 (mu4e-message-field msg :maildir))))
+			:vars '(
+					(user-full-name . "Zach Heylmun")
+					(user-mail-address . "zach@voidstarsolutions.com")
+					(mu4e-sent-folder . "/voidstar/Sent Items")
+					(mu4e-trash-folder . "/voidstar/Trash")
+					(mu4e-drafts-folder . "/voidstar/Drafts")
+					(mu4e-refile-folder . "/voidstar/Archive")
+					(mu4e-sent-messages-behavior . sent)
+					))
+		  ,(make-mu4e-context
+			:name "Personal"
+			:match-func (lambda (msg) (when msg
+										(string-prefix-p "/Personal" (mu4e-message-field msg :maildir))))
+			:vars '
+					(mu4e-sent-folder . "/Personal/Sent")
+					(mu4e-trash-folder . "/Personal/Deleted")
+					(mu4e-refile-folder . "/Personal/Archive")
+					))
+		  ))
+  (setq mu4e-context-policy 'pick-first)
+  )
+#+end_src
