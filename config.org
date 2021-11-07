@@ -4,11 +4,11 @@
 
 * Emacs Config
   
-  [[https://emacs.org][Emacs]] is a neat text editor
+[[https://emacs.org][Emacs]] is a neat text editor
 
 * Auto-Package-Update
 
-  Automagically update packages weekly if updates are available.
+Automagically update packages weekly if updates are available.
 
 #+begin_src emacs-lisp
 
@@ -34,20 +34,22 @@
   ;; Start text 16 pixels from the left edge of the buffer
   (set-fringe-mode 16)
 
-  ;; Show column numbers in the mini-buffer
-  (column-number-mode t)
+  ;; Show column numbers in the modeline
+  (column-number-mode)
 
-  ;; Enable line numbers globally
-  (global-display-line-numbers-mode t)
+  ;; Enable line numbers for some modes
+  (dolist (mode '(text-mode-hook
+				  prog-mode-hook
+				  conf-mode-hook))
+	(add-hook mode (lambda () (display-line-numbers-mode 1))))
 
-  ;; Disable line numbers in org-mode, term-mode and eshell-mode
-  (dolist (mode '(org-mode-hook
-				  term-mode-hook
-				  eshell-mode-hook))
+  ;; Override some modes which derive from the above
+  (dolist (mode '(org-mode-hook))
 	(add-hook mode (lambda () (display-line-numbers-mode 0))))
 
   ;; 8 character tabs are too damn large
   (setq-default tab-width 4)
+
   ;; Default behavior is case sensitive for sorting.
   ;; Just sort alphabetically
   (setq sort-fold-case t)
@@ -78,7 +80,7 @@ Load evil super early so my key bindings don't change when I goof my config
 
 ** EVIL
 
-   [[eww:https://github.com/emacs-evil/evil][Evil]] mode brings Vim keybindings to Emacs.
+[[eww:https://github.com/emacs-evil/evil][Evil]] mode brings Vim keybindings to Emacs.
    
 #+begin_src emacs-lisp
 
@@ -131,16 +133,16 @@ Load evil super early so my key bindings don't change when I goof my config
 
 #+begin_src emacs-lisp
 
-	;; Used as default font for most things
-	(set-face-attribute 'default nil :font "Fira Code Retina" :height 120)
+  ;; Used as default font for most things
+  (set-face-attribute 'default nil :font "Fira Code Retina" :height 120)
 
-	(use-package all-the-icons
-	  :straight t)
+  (use-package all-the-icons
+	:straight t)
 
-	;; All the icons requires that the fonts be installed to the system before use.
-	;; Check for them and install if unavailable, silencing the confirmation
-	(if(not(find-font(font-spec :name "all-the-icons")))
-		(all-the-icons-install-fonts 0))
+  ;; All the icons requires that the fonts be installed to the system before use.
+  ;; Check for them and install if unavailable, silencing the confirmation
+  (if(not(find-font(font-spec :name "all-the-icons")))
+	  (all-the-icons-install-fonts 0))
 
 #+end_src
    
@@ -157,7 +159,7 @@ The Doom modeline provides a concise view of current mode functionality
   (use-package doom-modeline
 	:straight t
 	:init (doom-modeline-mode 1)
-	:custom ((doom-modeline-height 24)))
+	:custom ((doom-modeline-height 16)))
 
 #+end_src
 
@@ -170,9 +172,8 @@ The Doom modeline provides a concise view of current mode functionality
 	:config
 	(doom-themes-visual-bell-config)
 	(doom-themes-treemacs-config)
-	(doom-themes-org-config)
 	:init
-	(load-theme 'doom-one t))
+	(load-theme 'doom-gruvbox t))
 
 #+end_src
 
@@ -393,17 +394,17 @@ Add friendly mulit-editing
 
    Nice bullets
    
-   #+begin_src emacs-lisp
+#+begin_src emacs-lisp
+  (use-package org-superstar
+	:straight t
+	:after org
+	:hook( org-mode . org-superstar-mode )
+	:custom
+	(org-superstar-remove-leading-stars t)
+	(org-superstar-headline-bullets-list '("◉" "○" "●" "○" "●" "○" "●")))
 
-	 (use-package org-bullets
-	   :straight t
-	   :after org
-	   :hook( org-mode . org-bullets-mode )
-	   :custom
-	   (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
+#+end_src
 
-   #+end_src
-   
 ** Org Mode Font Setup
 
    Configure some nice defaults for viewing org mode files.
@@ -469,7 +470,6 @@ Add friendly mulit-editing
 
 	 (use-package org
 	   :straight t
-	   ;;:hook (org-mode . efs/org-mode-setup)
 	   :config
 	   (setq org-agenda-files
 			 '("~/.org/tasks.org"
@@ -550,6 +550,13 @@ I'll probably have something to say here eventually
 
 #+end_src
 
+*** Indent Guides
+#+begin_src emacs-lisp
+  (use-package highlight-indent-guides
+	:straight t
+	:config
+	(setq highlight-indent-guides-method 'character))
+#+end_src
 *** LSP
 
 [[https://github.com/emacs-lsp/lsp-mode][lsp-mode]] provides advanced language server based features to Emacs.
@@ -575,11 +582,6 @@ I'll probably have something to say here eventually
 	:custom
 	(lsp-ui-doc-position 'bottom))
 
-  (use-package ivy-xref
-	:straight t
-	:init
-	(setq xref-show-definitions-function #'ivy-xref-show-defs))
-
 #+end_src
 
 *** Magit
@@ -602,19 +604,12 @@ I'll probably have something to say here eventually
   (use-package projectile
 	:diminish projectile-mode
 	:config (projectile-mode)
-	:custom ((projectile-completion-system 'ivy))
 	:bind-keymap
 	("C-c p" . projectile-command-map)
 	:init
-	;; NOTE: Set this to the folder where you keep your Git repos!
-
 	(when (file-directory-p "~/dev/")
 	  (setq projectile-project-search-path '("~/dev")))
 	(setq projectile-switch-project-action #'projectile-dired))
-
-  (use-package counsel-projectile
-	:straight t
-	:config (counsel-projectile-mode))
 
 #+end_src
 
@@ -646,7 +641,7 @@ Cleanup
   (use-package ws-butler
 	:straight t
 	:config
-	(ws-butler-global-mode 1))
+	(ws-butler-global-mode))
 
   (add-hook 'prog-mode-hook ; turn on whitespace-mode in any 'programming mode'
 			(lambda ()
@@ -716,12 +711,13 @@ Add support for Jenkinsfiles
 *** Python
 
 #+begin_src emacs-lisp
-(use-package lsp-python-ms
-  :straight t
-  :init (setq lsp-python-ms-auto-install-server t)
-  :hook (python-mode . (lambda ()
-                          (require 'lsp-python-ms)
-                          (lsp))))  ; or lsp-deferred
+  (use-package lsp-python-ms
+	:straight t
+	:init (setq lsp-python-ms-auto-install-server t)
+	:hook (python-mode . (lambda ()
+							(require 'lsp-python-ms)
+							(highlight-indent-guides-mode)
+							(lsp))))  ; or lsp-deferred
 #+end_src 
 
 *** Swift
@@ -825,7 +821,6 @@ Emacs is frequently started from the UI instead of terminal.  Make sure the path
 	   :hook (term-mdode . eterm-256color-mode))
 
    #+end_src
-
 
 * Email
 #+begin_src emacs-lisp :tangle no
