@@ -246,7 +246,20 @@ Add friendly mulit-editing
 	:after projectile treemacs)
 
 #+end_src
-   
+
+** Undo-Tree
+
+[[https://www.dr-qubit.org/undo-tree.html][Undo-Tree]] provides a powerful visualization of the undo tree structure
+
+#+begin_src emacs-lisp
+
+  (use-package undo-tree
+	:straight t
+	:config
+	(global-undo-tree-mode 1))
+
+#+end_src
+
 * Help and navigation
 
 ** Vertico
