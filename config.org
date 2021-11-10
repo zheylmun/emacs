@@ -201,6 +201,14 @@ Add friendly mulit-editing
 	:hook (prog-mode . rainbow-delimiters-mode))
 
 #+end_src
+** Solaire
+
+#+begin_src emacs-lisp
+  (use-package solaire-mode
+	:straight t
+	:config
+	(solaire-global-mode +1))
+#+end_src
 
 ** Treemacs
 
@@ -297,13 +305,8 @@ Add friendly mulit-editing
 
 	 (use-package helpful
 	   :straight t
-	   :custom
-	   (counsel-describe-function-function #'helpful-callable)
-	   (counsel-describe-variable-function #'helpful-variable)
 	   :bind
-	   ([remap describe-function] . counsel-describe-function)
 	   ([remap describe-command] . helpful-command)
-	   ([remap describe-variable] . counsel-describe-variable)
 	   ([remap describe-key] . helpful-key))
 
    #+end_src
@@ -366,48 +369,9 @@ Add friendly mulit-editing
 
 * Org Mode
   
-** Org Babel Configuration
-
-   Org mode babel integration for emacs-lisp and python
-   
-   #+begin_src emacs-lisp
-
-	 (org-babel-do-load-languages
-	  'org-babel-load-languages
-	  '((emacs-lisp . t)
-		(python . t)))
-
-	 (setq org-confirm-babel-evaluate nil)
-
-	 (push '("conf-unix" . conf-unix) org-src-lang-modes)
-
-	 (require 'org-tempo )
-	 (add-to-list 'org-structure-template-alist '("c99" . "src c"))
-	 (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
-	 (add-to-list 'org-structure-template-alist '("py" . "src python"))
-	 (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
-
-
-   #+end_src
-
-** Org Bullets
-
-   Nice bullets
-   
-#+begin_src emacs-lisp
-  (use-package org-superstar
-	:straight t
-	:after org
-	:hook( org-mode . org-superstar-mode )
-	:custom
-	(org-superstar-remove-leading-stars t)
-	(org-superstar-headline-bullets-list '("◉" "○" "●" "○" "●" "○" "●")))
-
-#+end_src
-
 ** Org Mode Font Setup
 
-   Configure some nice defaults for viewing org mode files.
+Configure some nice defaults for viewing org mode files.
    
    #+begin_src emacs-lisp
 
@@ -443,25 +407,6 @@ Add friendly mulit-editing
 
    #+end_src
    
-** Org Mode Visuals
-
-   Configure org mode content to render in center of buffer
-
-   #+begin_src emacs-lisp
-
-	 (defun void/org-mode-visual-fill ()
-	   (setq visual-fill-column-width 80
-			 visual-fill-column-center-text t)
-	   (visual-fill-column-mode 1)
-	   (visual-line-mode 1))
-
-	 (use-package visual-fill-column
-	   :straight t
-	   :defer t
-	   :hook (org-mode . void/org-mode-visual-fill))
-
-   #+end_src
-   
 ** Org Mode Config
    
    Configure org-mode itself.  Replace ellipsis in collapsed sections with a nice arrow indicating additional content.
@@ -480,9 +425,65 @@ Add friendly mulit-editing
 			   (sequence  "BACKLOG(b)" "PLAN(p)" "READY(r)" "ACTIVE(a)" "REVIEW(r)" "WAIT(w)" "HOLD(h)" "|" "COMPLETED(c)" "CANCELED(k)" )))
 	   (setq org-log-done t)
 	   (void/org-font-setup))
+   #+end_src
+
+** Org Babel Configuration
+
+   Org mode babel integration for emacs-lisp and python
+   
+   #+begin_src emacs-lisp
+
+	 (org-babel-do-load-languages
+	  'org-babel-load-languages
+	  '((emacs-lisp . t)
+		(python . t)))
+
+	 (setq org-confirm-babel-evaluate nil)
+
+	 (push '("conf-unix" . conf-unix) org-src-lang-modes)
+	 (require 'org-tempo )
+	 (add-to-list 'org-structure-template-alist '("c99" . "src c"))
+	 (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
+	 (add-to-list 'org-structure-template-alist '("py" . "src python"))
+	 (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
 
    #+end_src
 
+** Org Bullets
+
+   Nice bullets
+   
+#+begin_src emacs-lisp
+  (use-package org-superstar
+	:straight t
+	:after org
+	:hook( org-mode . org-superstar-mode )
+	:custom
+	(org-superstar-remove-leading-stars t)
+	(org-superstar-headline-bullets-list '("◉" "○" "●" "○" "●" "○" "●")))
+
+#+end_src
+
+** Org Mode Visuals
+
+   Configure org mode content to render in center of buffer
+
+   #+begin_src emacs-lisp
+
+	 (defun void/org-mode-visual-fill ()
+	   (setq visual-fill-column-width 80
+			 visual-fill-column-center-text t)
+	   (visual-fill-column-mode 1)
+	   (visual-line-mode 1))
+
+	 (use-package visual-fill-column
+	   :straight t
+	   :after org
+	   :defer t
+	   :hook (org-mode . void/org-mode-visual-fill))
+
+   #+end_src
+   
 ** Org Roam
 
 I'll probably have something to say here eventually
@@ -490,7 +491,7 @@ I'll probably have something to say here eventually
 #+begin_src emacs-lisp
   (use-package org-roam
 	:straight t
-	:ensure t
+	:after org
 	:init
 	(setq org-roam-v2-ack t) ;; Never had a 1.0 database, don't worry about it
 	:custom
@@ -557,6 +558,7 @@ I'll probably have something to say here eventually
 	:config
 	(setq highlight-indent-guides-method 'character))
 #+end_src
+
 *** LSP
 
 [[https://github.com/emacs-lsp/lsp-mode][lsp-mode]] provides advanced language server based features to Emacs.
@@ -574,13 +576,14 @@ I'll probably have something to say here eventually
 	(setq lsp-keymap-prefix "C-c l")
 	:commands(lsp lsp-deferred)
 	:config
+	(setq read-process-output-max (* 5 1024 1024))
 	(lsp-enable-which-key-integration))
 
   (use-package lsp-ui
 	:straight t
 	:hook (lsp-mode . lsp-ui-mode)
 	:custom
-	(lsp-ui-doc-position 'bottom))
+	(lsp-ui-doc-position 'atpoint))
 
 #+end_src
 
@@ -628,6 +631,16 @@ I'll probably have something to say here eventually
 
 #+end_src
 
+*** Yasnippet
+
+[[https://github.com/joaotavora/yasnippet][Yasnippet]] expands templates
+
+#+begin_src emacs-lisp
+
+  (use-package yasnippet
+	:straight t)
+
+#+end_src
 *** Whitespace
 
 Cleanup
@@ -711,14 +724,15 @@ Add support for Jenkinsfiles
 *** Python
 
 #+begin_src emacs-lisp
-  (use-package lsp-python-ms
+
+  (use-package lsp-pyright
 	:straight t
-	:init (setq lsp-python-ms-auto-install-server t)
-	:hook (python-mode . (lambda ()
-							(require 'lsp-python-ms)
-							(highlight-indent-guides-mode)
-							(lsp))))  ; or lsp-deferred
-#+end_src 
+	:after lsp-mode
+	:custom
+	(lsp-pyright-auto-import-completions nil)
+	(lsp-pyright-typechecking-mode "off"))
+
+#+end_src
 
 *** Swift
 
