@@ -23,6 +23,17 @@ Automagically update packages weekly if updates are available.
 
 #+end_src
 
+* Garbage Collection
+
+[[https://github.com/emacsmirror/gcmh][Gcmh]] uses some clever trickery to perform garbage collections in when idle, minimizing the impact.  It's enabled last thing in [[file:init.el][init.el]], allowing initialization without gc, but enabling it before user input.
+
+#+begin_src emacs-lisp
+
+  (use-package gcmh
+	:straight t)
+
+#+end_src
+
 * UI Configuration
 
   The following section configures the basics of the stock Emacs UI. Inint.el also disables several UI elements as well as the startup message.  Here we configure default buffer rendering and UI behavior.

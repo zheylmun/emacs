@@ -1,13 +1,11 @@
 ;;; init.el --- Bootstrap Emacs Configuration from config.org
+
 ;;; Commentary:
 ;; This initialization script assumes a config.org in the Emacs home directory.
 ;; If one is present it will perform some basic package manager initialization
 ;; and bootstrap the configuration there.
 
 ;;; Code:
-
-;; Default memory limit is crazy low.  Give some breathing room
-(setq gc-cons-threshold (* 128 1000 1000)) ;; 128 Mb for now
 
 ;; Define function for timing startup.  Useful for fine tuning.
 (defun void/display-startup-time ()
@@ -44,11 +42,16 @@
   (load bootstrap-file nil 'nomessage))
 
 (straight-use-package 'use-package)
+
 (defalias 'org-file-name-concat #'file-name-concat)
+
 ;; Load the config
 (org-babel-load-file (concat user-emacs-directory "config.org"))
 
 ;; Don't edit my init on me:
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+
+;; Done initializing, enable Garbage Colletion magic hack
+(gcmh-mode 1)
 
 ;;; End: init.el
