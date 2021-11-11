@@ -43,7 +43,9 @@
 
 (straight-use-package 'use-package)
 
-(defalias 'org-file-name-concat #'file-name-concat)
+;; Pull/build Org mode before tangling config
+(use-package org
+  :straight t)
 
 ;; Load the config
 (org-babel-load-file (concat user-emacs-directory "config.org"))

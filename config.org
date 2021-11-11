@@ -395,61 +395,52 @@ Add friendly mulit-editing
   
 ** Org Mode Font Setup
 
-Configure some nice defaults for viewing org mode files.
-   
-   #+begin_src emacs-lisp
 
-	 (defun void/org-font-setup ()
-	   ;; Replace list hyphen with dot
-	   (font-lock-add-keywords 'org-mode
-							   '(("^ *\\([-]\\) "
-								  (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+#+begin_src emacs-lisp
 
-	   ;; Set faces for heading levels
-	   (dolist (face '((org-level-1 . 1.2)
-					   (org-level-2 . 1.1)
-					   (org-level-3 . 1.05)
-					   (org-level-4 . 1.0)
-					   (org-level-5 . 1.1)
-					   (org-level-6 . 1.1)
-					   (org-level-7 . 1.1)
-					   (org-level-8 . 1.1)))
-		 (set-face-attribute (car face) nil :font "Cantarell" :weight 'regular :height (cdr face)))
+  ;; Replace list hyphen with dot
+  (font-lock-add-keywords 'org-mode
+						  '(("^ *\\([-]\\) "
+							 (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
 
-	   ;; Ensure that anything that should be fixed-pitch in Org files appears that way
-	   (set-face-attribute 'org-block nil    :foreground nil :inherit 'fixed-pitch)
-	   (set-face-attribute 'org-table nil    :inherit 'fixed-pitch)
-	   (set-face-attribute 'org-formula nil  :inherit 'fixed-pitch)
-	   (set-face-attribute 'org-code nil     :inherit '(shadow fixed-pitch))
-	   (set-face-attribute 'org-table nil    :inherit '(shadow fixed-pitch))
-	   (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
-	   (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
-	   (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
-	   (set-face-attribute 'org-checkbox nil  :inherit 'fixed-pitch)
-	   (set-face-attribute 'line-number nil :inherit 'fixed-pitch)
-	   (set-face-attribute 'line-number-current-line nil :inherit 'fixed-pitch))
+  ;; Set faces for heading levels
+  (dolist (face '((org-level-1 . 1.2)
+				  (org-level-2 . 1.1)
+				  (org-level-3 . 1.05)
+				  (org-level-4 . 1.0)
+				  (org-level-5 . 1.1)
+				  (org-level-6 . 1.1)
+				  (org-level-7 . 1.1)
+				  (org-level-8 . 1.1)))
+	(set-face-attribute (car face) nil :font "Cantarell" :weight 'regular :height (cdr face)))
 
-   #+end_src
+  ;; Ensure that anything that should be fixed-pitch in Org files appears that way
+  (set-face-attribute 'org-block nil    :foreground nil :inherit 'fixed-pitch)
+  (set-face-attribute 'org-table nil    :inherit 'fixed-pitch)
+  (set-face-attribute 'org-formula nil  :inherit 'fixed-pitch)
+  (set-face-attribute 'org-code nil     :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-table nil    :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
+  (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
+  (set-face-attribute 'org-checkbox nil  :inherit 'fixed-pitch)
+  (set-face-attribute 'line-number nil :inherit 'fixed-pitch)
+  (set-face-attribute 'line-number-current-line nil :inherit 'fixed-pitch)
+
+#+end_src
    
 ** Org Mode Config
    
-   Configure org-mode itself.  Replace ellipsis in collapsed sections with a nice arrow indicating additional content.
+Configure org-mode itself.  Replace ellipsis in collapsed sections with a nice arrow indicating additional content.
 
-   #+begin_src emacs-lisp
+#+begin_src emacs-lisp
+  (setq org-agenda-files
+		'("~/.org/tasks.org"
+		  "~/.org/birthdays.org"))
+  (setq org-ellipsis " ▾")
+  (setq org-log-done t)
 
-	 (use-package org
-	   :straight t
-	   :config
-	   (setq org-agenda-files
-			 '("~/.org/tasks.org"
-			   "~/.org/birthdays.org"))
-	   (setq org-ellipsis " ▾")
-	   (setq org-todo-keywords
-			 '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d)" )
-			   (sequence  "BACKLOG(b)" "PLAN(p)" "READY(r)" "ACTIVE(a)" "REVIEW(r)" "WAIT(w)" "HOLD(h)" "|" "COMPLETED(c)" "CANCELED(k)" )))
-	   (setq org-log-done t)
-	   (void/org-font-setup))
-   #+end_src
+#+end_src
 
 ** Org Babel Configuration
 
