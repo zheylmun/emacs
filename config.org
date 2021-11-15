@@ -147,6 +147,15 @@ Load evil super early so my key bindings don't change when I goof my config
   ;; Used as default font for most things
   (set-face-attribute 'default nil :font "Fira Code Retina" :height 120)
 
+  (use-package fira-code-mode
+	:straight t
+	:hook prog-mode)     ; mode to enable fira-code-mode in
+
+  ;;Fira Code Mode requires that the fonts be installed to the system before use.
+  ;; Check for them and install if unavailable
+  (if(not(find-font(font-spec :name "Fira Code Symbol")))
+	  (fira-code-mode-install-fonts))
+
   (use-package all-the-icons
 	:straight t)
 
@@ -486,7 +495,7 @@ Configure org-mode itself.  Replace ellipsis in collapsed sections with a nice a
    #+begin_src emacs-lisp
 
 	 (defun void/org-mode-visual-fill ()
-	   (setq visual-fill-column-width 80
+	   (setq visual-fill-column-width 120
 			 visual-fill-column-center-text t)
 	   (visual-fill-column-mode 1)
 	   (visual-line-mode 1))
