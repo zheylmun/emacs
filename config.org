@@ -624,8 +624,12 @@ I'll probably have something to say here eventually
 
 #+begin_src emacs-lisp
 
-  (use-package magit
-	:straight t)
+	(use-package magit
+		:straight t)
+
+	(use-package evil-magit
+	  :straight t
+	  :after evil magit)
 
 #+end_src
 
