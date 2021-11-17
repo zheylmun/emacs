@@ -169,7 +169,14 @@ Load evil super early so my key bindings don't change when I goof my config
 * UI Packages
 
 Set of packages to improve the look and functionality of the UI
-  
+** Beacon
+[[https://github.com/Malabarba/beacon][Beacon]] makes it easy to find your cursor when the screen moves
+#+begin_src emacs-lisp
+  (use-package beacon
+  :straight t
+  :config
+  (beacon-mode 1))
+#+end_src
 ** Doom Modeline
     
 The Doom modeline provides a concise view of current mode functionality
