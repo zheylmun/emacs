@@ -134,7 +134,9 @@ Load evil super early so my key bindings don't change when I goof my config
 #+begin_src emacs-lisp
 
   (use-package evil-collection
-	:straight t)
+	:straight t
+	:init
+	(evil-collection-init))
 
 #+end_src
 
@@ -626,10 +628,6 @@ I'll probably have something to say here eventually
 
 	(use-package magit
 		:straight t)
-
-	(use-package evil-magit
-	  :straight t
-	  :after evil magit)
 
 #+end_src
 
