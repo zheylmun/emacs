@@ -36,7 +36,7 @@ Automagically update packages weekly if updates are available.
 
 * UI Configuration
 
-  The following section configures the basics of the stock Emacs UI. Inint.el also disables several UI elements as well as the startup message.  Here we configure default buffer rendering and UI behavior.
+The following section configures the basics of the stock Emacs UI. Inint.el also disables several UI elements as well as the startup message.  Here we configure default buffer rendering and UI behavior.
 
 ** Basic UI elements
 
@@ -172,13 +172,16 @@ Load evil super early so my key bindings don't change when I goof my config
 
 Set of packages to improve the look and functionality of the UI
 ** Beacon
+
 [[https://github.com/Malabarba/beacon][Beacon]] makes it easy to find your cursor when the screen moves
+
 #+begin_src emacs-lisp
   (use-package beacon
   :straight t
   :config
   (beacon-mode 1))
 #+end_src
+
 ** Doom Modeline
     
 The Doom modeline provides a concise view of current mode functionality
@@ -230,6 +233,7 @@ Add friendly mulit-editing
 	:hook (prog-mode . rainbow-delimiters-mode))
 
 #+end_src
+
 ** Solaire
 
 #+begin_src emacs-lisp
@@ -674,6 +678,7 @@ I'll probably have something to say here eventually
 	:straight t)
 
 #+end_src
+
 *** Whitespace
 
 Cleanup

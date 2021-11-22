@@ -8,7 +8,7 @@ This repo contains a custom git configuration created by [[https://github.com/zh
 
 ** Fonts
 
-Before running, install the following fonts:
+Before running for the first time, install the following fonts:
 
 [[https://github.com/tonsky/FiraCode/releases/tag/5.2][Fira Code]]: Used for source code
 
