@@ -707,20 +707,23 @@ Cleanup
     CCLS is a C/C++ indexer which uses the compilation commands and clang frontend to ensure that the indexing is accurate.
 	
 #+begin_src emacs-lisp
-  (use-package flycheck-clang-tidy
-	:straight t
-	:after flycheck
-	:hook
-	(flycheck-mode . flycheck-clang-tidy-setup))
+	(use-package flycheck-clang-tidy
+	  :straight t
+	  :after flycheck
+	  :hook
+	  (flycheck-mode . flycheck-clang-tidy-setup))
 
-  (use-package ccls
-		  :straight t
-		  :after lsp
-		  :hook ((c-mode c++-mode objc-mode cuda-mode) .
-				 (lambda () (require 'ccls) (lsp)))
-		  :init
-		  (setq ccls-initialization-options '(:compilationDatabaseDirectory "build"
-												   :cache (:directory "build/.ccls-cache"))))
+	(use-package ccls
+			:straight t
+			:after lsp
+			:hook ((c-mode c++-mode objc-mode cuda-mode) .
+				   (lambda () (require 'ccls) (lsp)))
+			:init
+			(setq ccls-initialization-options '(:compilationDatabaseDirectory "build"
+												:cache (:directory "build/.ccls-cache")
+												:clang (:resourceDir "/Applications/ARM/lib/gcc/arm-none-eabi/10.3.1"
+														:excludeArgs ["working-directory"]))))
+
 
 #+end_src
 
