@@ -704,7 +704,7 @@ Cleanup
 
 *** C/C++
 
-    CCLS is a C/C++ indexer which uses the compilation commands and clang frontend to ensure that the indexing is accurate.
+CCLS is a C/C++ indexer which uses the compilation commands and clang frontend to ensure that the indexing is accurate.
 	
 #+begin_src emacs-lisp
   (use-package flycheck-clang-tidy
@@ -744,7 +744,7 @@ Cleanup
 
 *** Dart
 
-	Add support for [[https://dart.dev][Dart]] and [[https://flutter.dev][Flutter]] development.
+Add support for [[https://dart.dev][Dart]] and [[https://flutter.dev][Flutter]] development.
 
 	#+begin_src emacs-lisp
 
@@ -876,6 +876,7 @@ Configuration for terminals which all use
 Emacs is frequently started from the UI instead of terminal.  Make sure the path still works.
 
 #+begin_src emacs-lisp
+
   (defun void/configure-eshell ()
 	;; Save a command history
 	(add-hook 'eshell-pre-command-hook 'eshell-save-some-history)
@@ -906,6 +907,7 @@ Emacs is frequently started from the UI instead of terminal.  Make sure the path
 	:hook (eshell-first-time-mode . void/configure-eshell)
 	:config
 	(eshell-git-prompt-use-theme 'powerline))
+
 #+end_src
 
 ** Color Support
@@ -919,6 +921,7 @@ Emacs is frequently started from the UI instead of terminal.  Make sure the path
    #+end_src
 
 * Email
+
 #+begin_src emacs-lisp :tangle no
   (use-package mu4e
   :config
