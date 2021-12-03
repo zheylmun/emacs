@@ -792,6 +792,12 @@ Add support for Jenkinsfiles
 
 #+end_src
 
+*** Meson
+
+#+begin_src emacs-lisp
+  (use-package meson-mode
+	:straight t)
+#+end_src
 *** PlantUML
 
 [[https://plantuml.com][PlantUML]] is an excellent uml and diagram markup language.  It allows you to create pretty diagrams with very little effort. [[https://github.com/skuro/plantuml-mode][Plantuml-mode]] adds a major mode for editing PlantUML diagrams.
