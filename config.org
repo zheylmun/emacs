@@ -721,8 +721,7 @@ CCLS is a C/C++ indexer which uses the compilation commands and clang frontend t
 				   (require 'ccls)
 				   (lsp)))
 		  :init
-		  (setq ccls-initialization-options '(:compilationDatabaseDirectory "build"
-											  :cache (:directory "build/.ccls-cache")
+		  (setq ccls-initialization-options '(:cache (:directory "build/.ccls-cache")
 											  :clang ( :excludeArgs ["-working-directory"] ))))
   (use-package clang-format+
 	:straight t
