@@ -803,8 +803,10 @@ Add support for Jenkinsfiles
 
 #+begin_src emacs-lisp
 
-  (use-package plantuml-mode
-	:straight t)
+	  (use-package plantuml-mode
+		:straight t
+		:config
+		setq plantuml-default-exec-mode 'server))
 
 #+end_src
 
