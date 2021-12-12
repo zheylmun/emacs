@@ -806,7 +806,7 @@ Add support for Jenkinsfiles
 	  (use-package plantuml-mode
 		:straight t
 		:config
-		setq plantuml-default-exec-mode 'server))
+		(setq plantuml-default-exec-mode 'server))
 
 #+end_src
 
