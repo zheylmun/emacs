@@ -729,7 +729,22 @@ CCLS is a C/C++ indexer which uses the compilation commands and clang frontend t
 		   (lambda ()
 			 (clang-format+-mode) )))
 #+end_src
+*** C#
 
+#+begin_src emacs-lisp
+
+  (use-package omnisharp
+	:straight t
+	:hook
+	(csharp-mode . (lambda ()
+					 (omnisharp-mode)
+					 (add-to-list 'company-backends 'company-omnisharp))))
+  ;; add support for xaml and cshtml
+  (add-to-list 'auto-mode-alist '("\\.xaml\\'" . xml-mode))
+  (add-to-list 'auto-mode-alist '("\\.cshtml\\'" . html-mode))
+  (add-to-list 'auto-mode-alist '("\\.razor\\'" . html-mode))
+
+#+end_src
 *** CMake
 
 	Add support for [[https://cmake.org][CMake]] files.
