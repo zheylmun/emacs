@@ -513,7 +513,9 @@ Configure org-mode itself.  Replace ellipsis in collapsed sections with a nice a
 	   :straight t
 	   :after org
 	   :defer t
-	   :hook (org-mode . void/org-mode-visual-fill))
+	   :hook
+	   (org-mode . void/org-mode-visual-fill)
+	   (markdown-mode . void/org-mode-visual-fill))
 
    #+end_src
    
