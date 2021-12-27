@@ -54,10 +54,6 @@ The following section configures the basics of the stock Emacs UI. Inint.el also
 				  conf-mode-hook))
 	(add-hook mode (lambda () (display-line-numbers-mode 1))))
 
-  ;; Override some modes which derive from the above
-  (dolist (mode '(org-mode-hook))
-	(add-hook mode (lambda () (display-line-numbers-mode 0))))
-
   ;; 8 character tabs are too damn large
   (setq-default tab-width 4)
 
