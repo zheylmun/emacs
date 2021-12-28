@@ -501,23 +501,22 @@ Configure org-mode itself.  Replace ellipsis in collapsed sections with a nice a
 
    Configure org mode content to render in center of buffer
 
-   #+begin_src emacs-lisp
+#+begin_src emacs-lisp
 
-	 (defun void/org-mode-visual-fill ()
-	   (setq visual-fill-column-width 120
-			 visual-fill-column-center-text t)
-	   (visual-fill-column-mode 1)
-	   (visual-line-mode 1))
+  (defun void/org-mode-visual-fill ()
+	(setq visual-fill-column-width 120
+		  visual-fill-column-center-text t)
+	(visual-fill-column-mode 1)
+	(visual-line-mode 1))
 
-	 (use-package visual-fill-column
-	   :straight t
-	   :after org
-	   :defer t
-	   :hook
-	   (org-mode . void/org-mode-visual-fill)
-	   (markdown-mode . void/org-mode-visual-fill))
+  (use-package visual-fill-column
+	:straight t
+	:after org
+	:defer t
+	:hook (org-mode . void/org-mode-visual-fill)
+	(markdown-mode . void/org-mode-visual-fill))
 
-   #+end_src
+#+end_src
    
 ** Org Roam
 
@@ -782,8 +781,9 @@ Add support for Jenkinsfiles
 *** Make
 	#+begin_src emacs-lisp
 
-	  (use-package make-mode
-		:straight t)
+			(use-package make-mode
+			  :straight t
+			  :mode (( "\\Doxyfile\\'" . makefile-mode)))
 
 	#+end_src
 
@@ -819,21 +819,23 @@ Add support for Jenkinsfiles
 	  (use-package plantuml-mode
 		:straight t
 		:config
-		(setq plantuml-default-exec-mode 'server))
+		(setq plantuml-default-exec-mode 'executable))
 
 #+end_src
 
 *** Python
 
 #+begin_src emacs-lisp
-
-  (use-package lsp-pyright
+  (use-package lsp-jedi
 	:straight t
-	:after lsp-mode
-	:custom
-	(lsp-pyright-auto-import-completions nil)
-	(lsp-pyright-typechecking-mode "off"))
+	:config
+	(with-eval-after-load "lsp-mode"
+	  (add-to-list 'lsp-enabled-clients 'jedi)))
 
+  (use-package python-black
+	:straight t
+	:after python
+	:hook (python-mode . python-black-on-save-mode-enable-dwim))
 #+end_src
 
 *** Swift
