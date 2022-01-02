@@ -55,5 +55,13 @@
 
 ;; Done initializing, enable Garbage Colletion magic hack
 (gcmh-mode 1)
+;; Layout the windows
+(add-hook 'window-setup-hook 'toggle-frame-maximized t)
+(evil-window-split)
+(evil-window-down 1)
+(eshell)
+(shrink-window-if-larger-than-buffer)
+(evil-window-up 1)
+(treemacs)
 
 ;;; End: init.el
