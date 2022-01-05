@@ -56,7 +56,7 @@
 ;; Done initializing, enable Garbage Colletion magic hack
 (gcmh-mode 1)
 ;; Layout the windows
-(add-hook 'window-setup-hook 'toggle-frame-maximized t)
+(add-hook 'window-setup-hook 'toggle-frame-fullscreen t)
 (evil-window-split)
 (evil-window-down 1)
 (eshell)
