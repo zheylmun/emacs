@@ -557,8 +557,9 @@ I'll probably have something to say here eventually
 #+begin_src emacs-lisp
 
   (use-package company
-	:straight t)
-  (add-hook 'after-init-hook 'global-company-mode)
+	:straight t
+	:init
+	(add-hook 'after-init-hook 'global-company-mode))
 
 #+end_src
 
