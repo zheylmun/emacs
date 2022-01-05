@@ -616,10 +616,13 @@ I'll probably have something to say here eventually
 
   (use-package lsp-ui
 	:straight t
+	:after lsp-mode
 	:hook (lsp-mode . lsp-ui-mode)
 	:custom
 	(lsp-ui-doc-position 'atpoint))
-
+  (use-package dap-mode
+	:straight t
+	:after lsp-mode)
 #+end_src
 
 *** Magit
@@ -763,8 +766,10 @@ Add support for [[https://dart.dev][Dart]] and [[https://flutter.dev][Flutter]] 
 	  (use-package dart-mode
 		:straight t)
 	  (use-package lsp-dart
-		:straight t)
-	  (add-hook 'dart-mode-hook 'lsp)
+		:straight t
+		:after lsp-mode
+		:hook
+		(dart-mode-hook . lsp))
 
 	#+end_src
 
