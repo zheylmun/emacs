@@ -675,8 +675,10 @@ I'll probably have something to say here eventually
 
 #+begin_src emacs-lisp
 
-  (use-package yasnippet
-	:straight t)
+	  (use-package yasnippet
+		:straight t
+		:config
+		(yas-global-mode t))
 
 #+end_src
 
@@ -708,11 +710,6 @@ Cleanup
 CCLS is a C/C++ indexer which uses the compilation commands and clang frontend to ensure that the indexing is accurate.
 	
 #+begin_src emacs-lisp
-  (use-package flycheck-clang-tidy
-	:straight t
-	:after flycheck
-	:hook
-	(flycheck-mode . flycheck-clang-tidy-setup))
 
   (use-package ccls
 		  :straight t
@@ -722,12 +719,16 @@ CCLS is a C/C++ indexer which uses the compilation commands and clang frontend t
 				   (require 'ccls)
 				   (lsp)))
 		  :init
+		  (with-eval-after-load "lsp-mode"
+			(add-to-list 'lsp-enabled-clients 'ccls))
+		  (setq ccls-executable "ccls")
 		  (setq ccls-initialization-options '(:cache (:directory "build/.ccls-cache")
 											  :clang ( :excludeArgs ["-working-directory"] ))))
   (use-package clang-format+
 	:straight t
 	:hook ((c-mode c++-mode) .
 		   (lambda ()
+			 (require clang-format+)
 			 (clang-format+-mode) )))
 #+end_src
 *** C#

@@ -59,7 +59,7 @@
 (add-hook 'window-setup-hook 'toggle-frame-fullscreen t)
 (evil-window-split)
 (evil-window-down 1)
-(eshell)
+(vterm)
 (shrink-window-if-larger-than-buffer)
 (evil-window-up 1)
 (treemacs)
