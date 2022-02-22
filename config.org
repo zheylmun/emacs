@@ -609,7 +609,6 @@ I'll probably have something to say here eventually
 	:init
 	;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
 	(setq lsp-keymap-prefix "C-c l")
-	:commands(lsp lsp-deferred)
 	:config
 	(setq read-process-output-max (* 5 1024 1024))
 	(lsp-enable-which-key-integration))
@@ -675,10 +674,10 @@ I'll probably have something to say here eventually
 
 #+begin_src emacs-lisp
 
-	  (use-package yasnippet
-		:straight t
-		:config
-		(yas-global-mode t))
+  (use-package yasnippet
+	:straight t
+	:config
+	(yas-global-mode t))
 
 #+end_src
 
@@ -712,18 +711,18 @@ CCLS is a C/C++ indexer which uses the compilation commands and clang frontend t
 #+begin_src emacs-lisp
 
   (use-package ccls
-		  :straight t
-		  :after lsp
-		  :hook ((c-mode c++-mode objc-mode cuda-mode) .
-				 (lambda ()
-				   (require 'ccls)
-				   (lsp)))
-		  :init
-		  (with-eval-after-load "lsp-mode"
-			(add-to-list 'lsp-enabled-clients 'ccls))
-		  (setq ccls-executable "ccls")
-		  (setq ccls-initialization-options '(:cache (:directory "build/.ccls-cache")
-											  :clang ( :excludeArgs ["-working-directory"] ))))
+	:straight t
+	:after lsp
+	:hook ((c-mode c++-mode objc-mode cuda-mode) .
+		   (lambda ()
+			 (require 'ccls)
+			 (lsp)))
+	:init
+	(with-eval-after-load "lsp-mode"
+	  (add-to-list 'lsp-enabled-clients 'ccls))
+	(setq ccls-executable "ccls")
+	(setq ccls-initialization-options '(:cache (:directory "build/.ccls-cache")
+											   :clang ( :excludeArgs ["-working-directory"] ))))
   (use-package clang-format+
 	:straight t
 	:hook ((c-mode c++-mode) .
@@ -751,28 +750,29 @@ CCLS is a C/C++ indexer which uses the compilation commands and clang frontend t
 
 	Add support for [[https://cmake.org][CMake]] files.
 
-	#+begin_src emacs-lisp
+#+begin_src emacs-lisp
 
-	  (use-package cmake-mode
-		:straight t)
+  (use-package cmake-mode
+	:straight t)
 
-	#+end_src
+#+end_src
 
 *** Dart
 
 Add support for [[https://dart.dev][Dart]] and [[https://flutter.dev][Flutter]] development.
 
-	#+begin_src emacs-lisp
+#+begin_src emacs-lisp
 
-	  (use-package dart-mode
-		:straight t)
-	  (use-package lsp-dart
-		:straight t
-		:after lsp-mode
-		:hook
-		(dart-mode-hook . lsp))
+  (use-package dart-mode
+	:straight t)
 
-	#+end_src
+  (use-package lsp-dart
+	:straight t
+	:after lsp-mode
+	:hook
+	(dart-mode-hook . lsp))
+
+#+end_src
 
 *** Jenkins
 
@@ -786,13 +786,13 @@ Add support for Jenkinsfiles
 #+end_src
 
 *** Make
-	#+begin_src emacs-lisp
+#+begin_src emacs-lisp
 
-			(use-package make-mode
-			  :straight t
-			  :mode (( "\\Doxyfile\\'" . makefile-mode)))
+  (use-package make-mode
+	:straight t
+	:mode (( "\\Doxyfile\\'" . makefile-mode)))
 
-	#+end_src
+#+end_src
 
 *** Markdown
 
@@ -805,8 +805,8 @@ Add support for Jenkinsfiles
 	:commands
 	(markdown-mode gfm-mode)
 	:mode (("README\\.md\\'" . gfm-mode)
-   ("\\.md\\'" . markdown-mode)
-   ("\\.markdown\\'" . markdown-mode))
+		   ("\\.md\\'" . markdown-mode)
+		   ("\\.markdown\\'" . markdown-mode))
 	:init (setq markdown-command "pandoc"))
 
 #+end_src
@@ -823,10 +823,10 @@ Add support for Jenkinsfiles
 
 #+begin_src emacs-lisp
 
-	  (use-package plantuml-mode
-		:straight t
-		:config
-		(setq plantuml-default-exec-mode 'executable))
+  (use-package plantuml-mode
+	:straight t
+	:config
+	(setq plantuml-default-exec-mode 'executable))
 
 #+end_src
 
@@ -838,16 +838,27 @@ Add support for Jenkinsfiles
 	:ensure t
 	:config
 	(with-eval-after-load "lsp-mode"
-	  (add-to-list 'lsp-disabled-clients 'pyls)
 	  (add-to-list 'lsp-enabled-clients 'jedi)))
 
   (use-package python-black
 	:demand t
 	:straight t
-	:after python
+	:after python lsp-mode
 	:hook (python-mode . (lambda ()
 					   (python-black-on-save-mode-enable-dwim)
 					   (lsp))))
+#+end_src
+
+*** Rust
+
+#+begin_src emacs-lisp
+  (use-package rustic
+	:ensure t
+	:straight t
+	:init
+	(with-eval-after-load "lsp-mode"
+	  (add-to-list 'lsp-enabled-clients 'rust-analyzer))
+	:after lsp-mode)
 #+end_src
 
 *** Swift
