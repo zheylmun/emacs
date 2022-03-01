@@ -1,4 +1,4 @@
-#+TITLE:	Zach Heylmun Emacs Config
+#+TITLE:	Zach Heeylmu Emacs Config
 #+AUTHOR:	Zach Heylmun
 #+EMAIL:	zach@voidstarsolutions.com
 
@@ -42,8 +42,7 @@ The following section configures the basics of the stock Emacs UI. Inint.el also
 
 #+begin_src emacs-lisp
 
-  ;; Start text 16 pixels from the left edge of the buffer
-  (set-fringe-mode 16)
+  (set-fringe-mode 0)
 
   ;; Show column numbers in the modeline
   (column-number-mode)
@@ -600,28 +599,40 @@ I'll probably have something to say here eventually
 
 #+begin_src emacs-lisp
 
-  (defun void/lsp-mode-setup ()
-	(setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
-	(lsp-headerline-breadcrumb-mode))
+		(defun void/lsp-mode-setup ()
+		  (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
+		  (lsp-headerline-breadcrumb-mode))
 
-  (use-package lsp-mode
-	:straight t
-	:init
-	;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
-	(setq lsp-keymap-prefix "C-c l")
-	:config
-	(setq read-process-output-max (* 5 1024 1024))
-	(lsp-enable-which-key-integration))
+		(use-package lsp-mode
+		  :straight t
+		  :init
+		  ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
+		  (setq lsp-keymap-prefix "C-c l")
+		  :config
+		  (setq read-process-output-max (* 5 1024 1024))
+		  (lsp-enable-which-key-integration))
 
-  (use-package lsp-ui
-	:straight t
-	:after lsp-mode
-	:hook (lsp-mode . lsp-ui-mode)
-	:custom
-	(lsp-ui-doc-position 'atpoint))
-  (use-package dap-mode
-	:straight t
-	:after lsp-mode)
+		(use-package lsp-ui
+		  :straight t
+		  :after lsp-mode
+		  :hook (lsp-mode . lsp-ui-mode)
+		  :custom
+		  (lsp-ui-doc-position 'atpoint))
+
+		(use-package dap-mode
+		  :straight t
+		  :after lsp-mode
+		  :config
+		  (require 'dap-gdb-lldb)
+		  (dap-register-debug-template "Rust::GDB Run Configuration"
+                             (list :type "gdb"
+                                   :request "launch"
+                                   :name "GDB::Run"
+                           :gdbpath "rust-gdb"
+                                   :target nil
+                                   :cwd nil)))
+
+
 #+end_src
 
 *** Magit
@@ -852,13 +863,14 @@ Add support for Jenkinsfiles
 *** Rust
 
 #+begin_src emacs-lisp
-  (use-package rustic
-	:ensure t
-	:straight t
-	:init
-	(with-eval-after-load "lsp-mode"
-	  (add-to-list 'lsp-enabled-clients 'rust-analyzer))
-	:after lsp-mode)
+	(use-package rustic
+	  :ensure t
+	  :straight t
+	  :init
+	  (with-eval-after-load "lsp-mode"
+		(add-to-list 'lsp-enabled-clients 'rust-analyzer)
+		(require 'dap-cpptools))
+	  :after lsp-mode)
 #+end_src
 
 *** Swift
@@ -881,7 +893,25 @@ Add support for Jenkinsfiles
 	:hook (swift-mode . (lambda () (lsp))))
 
 #+end_src
+*** Typescript
 
+#+begin_src emacs-lisp
+
+  (require 'ansi-color)
+
+  (defun colorize-compilation-buffer ()
+	(ansi-color-apply-on-region compilation-filter-start (point-max)))
+  (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
+
+  (use-package typescript-mode
+	:ensure t
+	:straight t
+	:init
+	(with-eval-after-load "lsp-mode"
+	  (add-to-list 'lsp-enabled-clients 'ts-ls))
+	:mode "\\.ts\\'"
+	:hook (typescript-mode . lsp-deferred))
+#+end_src
 *** Yaml
 
 	#+begin_src emacs-lisp
